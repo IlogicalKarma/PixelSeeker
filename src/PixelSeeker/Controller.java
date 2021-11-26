@@ -1,4 +1,4 @@
-package sample;
+package PixelSeeker;
 
 public class Controller {
 }
