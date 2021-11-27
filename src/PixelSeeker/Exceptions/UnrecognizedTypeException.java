@@ -1,6 +1,6 @@
 package PixelSeeker.Exceptions;
 
-public class UnrecognizedTypeException extends Exception{
+public class UnrecognizedTypeException extends RuntimeException{
     public UnrecognizedTypeException(){
         super();
     }

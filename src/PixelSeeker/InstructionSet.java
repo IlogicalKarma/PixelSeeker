@@ -17,17 +17,21 @@ public class InstructionSet {
     }
 
     /**
-     * Creates an instance of InstructionSet with the objects starting from the index.
+     * Creates an instance of InstructionSet with the objects starting from the index up to the limit.
      * @param index
      * @return
      */
     public InstructionSet subSet(int index){
         return subSet(index, tracker.size()-1);
     }
+    /**
+     * Creates an instance of InstructionSet with the objects starting from the index up to the limit.
+     * @param index
+     * @return
+     */
     public InstructionSet subSet(int index, int limit){
         InstructionSet instructionSet = new InstructionSet();
         for(int i = index-2; i < limit-1; i++){
-            System.out.println("E");
             switch (tracker.get(i)){
                 case "action":
                     instructionSet.add(actions.get(index));
@@ -35,6 +39,8 @@ public class InstructionSet {
                 case "statement":
                     instructionSet.add(statements.get(index));
                     break;
+                default:
+                    throw new UnrecognizedTypeException();
             }
         }
         return instructionSet;
@@ -60,6 +66,8 @@ public class InstructionSet {
                 case "statement":
                     statements.set(i-1, statements.get(i));
                     break;
+                default:
+                    throw new UnrecognizedTypeException();
             }
         }
         tracker.remove(index);
@@ -75,9 +83,9 @@ public class InstructionSet {
                     actions.get(i).use();
                     break;
                 case "statement":
-
+                    statements.get(i).execute();
                     break;
-                case "undetermined":
+                default:
                     throw new UnrecognizedTypeException();
             }
         }
@@ -91,6 +99,8 @@ public class InstructionSet {
             case "statement":
                 System.out.println(statements.get(index).type);
                 break;
+            default:
+                throw new UnrecognizedTypeException();
         }
     }
 }

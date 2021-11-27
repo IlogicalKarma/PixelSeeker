@@ -1,5 +1,5 @@
 package PixelSeeker;
 
-public interface CheckType{
-    public NYF extractProcedure();
+public abstract class CheckType{
+    public abstract boolean extractProcedure();
 }
