@@ -1,6 +1,6 @@
-package PixelSeeker;
+package PixelSeeker.instructions;
 
-import PixelSeeker.Exceptions.UnrecognizedTypeException;
+import PixelSeeker.exceptions.UnrecognizedTypeException;
 
 import java.util.ArrayList;
 
@@ -15,7 +15,6 @@ public class InstructionSet {
         actions = new ArrayList<>();
         statements.add(null);
     }
-
     /**
      * Creates an instance of InstructionSet with the objects starting from the index up to the limit.
      * @param index

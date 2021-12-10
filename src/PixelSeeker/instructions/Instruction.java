@@ -1,4 +1,4 @@
-package PixelSeeker;
+package PixelSeeker.instructions;
 
 public abstract class Instruction {
     String type = null;

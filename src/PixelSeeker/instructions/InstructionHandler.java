@@ -1,8 +1,5 @@
-package PixelSeeker;
+package PixelSeeker.instructions;
 
-import PixelSeeker.Exceptions.UnrecognizedTypeException;
-
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 public class InstructionHandler{

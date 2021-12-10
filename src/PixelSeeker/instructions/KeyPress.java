@@ -1,10 +1,10 @@
-package PixelSeeker;
+package PixelSeeker.instructions;
 
-import PixelSeeker.Exceptions.KeyNotSetException;
+import PixelSeeker.instructions.ActionType;
 
 import java.awt.*;
 
-public class KeyPress extends ActionType{
+public class KeyPress extends ActionType {
     private int lengthMili;
     private int key = -1;
     private Robot robot;

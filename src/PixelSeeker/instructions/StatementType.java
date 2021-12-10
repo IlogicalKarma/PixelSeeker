@@ -1,9 +1,11 @@
-package PixelSeeker;
+package PixelSeeker.instructions;
+
+import PixelSeeker.instructions.Instruction;
+import PixelSeeker.instructions.InstructionSet;
 
 import java.beans.Expression;
-import java.util.ArrayList;
 
-public abstract class StatementType extends Instruction{
+public abstract class StatementType extends Instruction {
     private InstructionSet instructionSet;
     private Expression expression;
     StatementType(){
