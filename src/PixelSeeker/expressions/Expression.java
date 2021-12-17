@@ -1,11 +1,12 @@
 package PixelSeeker.expressions;
 
 import PixelSeeker.MultiClassArray;
+import PixelSeeker.Parcel;
 import PixelSeeker.exceptions.ExpressionExtractionFailureException;
-/**/
+
 public class Expression{
     private String raw;
-    private int i = 0;
+    private Boolean b = null;
     private OperatorHandler.Operator[] operators = OperatorHandler.operators.operatorsArray;
     private MultiClassArray elements = new MultiClassArray();
     public Expression(String raw) throws ExpressionExtractionFailureException{
@@ -13,7 +14,7 @@ public class Expression{
         String valueString = new String();
         Integer value;
         Expression expression;
-        int nested, j;
+        int nested, j, i = 0;
         boolean valueBypass = false, notEmpty = false;
         OperatorHandler.Operator operator;
         while(i < raw.length()){
@@ -58,22 +59,18 @@ public class Expression{
             elements.add(value, value.getClass());
         }
     }
-    private void toBoolean(int i){
-        try {
-            Object object = elements.get(i);
-            Class classObject = elements.get(i).getClassObject();
-            if (classObject == Class.forName("java.lang.Boolean")) {
-
-            }else if(classObject == Class.forName("java.lang.Integer")){
-
-            }else if(classObject == Class.forName("PixelSeeker.expressions.OperatorHandler$Operator")){
-
-            }else if (classObject == Class.forName("PixelSeeker.expressions.Expression")){
-
+    private void toBoolean() throws ExpressionExtractionFailureException{
+        int size = elements.size();
+        Parcel parcel;
+        for(int i = 0; i < size; i++){
+            parcel = elements.get(i);
+            if(i%2 == 0){
+                if(!(parcel.getObject() instanceof Integer))
+                    throw new ExpressionExtractionFailureException("Expected operator");
+            }else{
+                if(!(parcel.getObject() instanceof OperatorHandler.Operator))
+                    throw new ExpressionExtractionFailureException("Expected value");
             }
-        }catch (ClassNotFoundException e){
-            e.printStackTrace();
-            System.out.println(e.toString());
         }
     }
     private int value(String string) throws ExpressionExtractionFailureException{
@@ -87,7 +84,7 @@ public class Expression{
         try {
             return Integer.parseInt(string);
         } catch (NumberFormatException e){
-            throw new ExpressionExtractionFailureException("Illegal value: \"" + string + '"');
+            throw new ExpressionExtractionFailureException("Illegal value: \"" + string + "\"");
         }
     }
     private OperatorHandler.Operator operatorLookup(char character){
@@ -98,59 +95,6 @@ public class Expression{
         }
         return null;
     }
-    /*public Expression nestedExpression() throws ExpressionExtractionFailureException{
-        String expression = new String();
-        int nested = 1,j;
-        char current;
-        for(j = i+1; nested > 0 && j < raw.length(); j++){
-            current = raw.charAt(j);
-            if(current == '(')
-                nested++;
-            else if(current == ')')
-                nested--;
-            expression += current;
-        }
-        i = j;
-        expression = expression.substring(0,expression.length()-1);
-        if(nested == 0)
-            return new Expression(expression);
-        throw new ExpressionExtractionFailureException("Nested expression unclosed/unopened");
-    }
-    public int extract() throws ExpressionExtractionFailureException{
-        int v = 0;
-        boolean start = true;
-        for(i = 0; i < raw.length();){
-            String valueString = new String();
-            OperatorHandler.Operator currentOperator = operatorLookup(raw.charAt(i));
-            while (raw.charAt(i) == ' '){ i++;
-                System.out.println("spatiu"); }
-            if(raw.charAt(i) == '('){
-                v = nestedExtraction();
-                System.out.println(v + "asa");
-                if(start)
-                    start = false;
-                continue;
-            }
-            if (start)
-                valueString += raw.charAt(i);
-            valueString = valueString.trim();
-            System.out.println("aici avem i de ");
-            while (++i < raw.length()-1) {
-                if (operatorLookup(raw.charAt(i)) != null) {
-                    break;
-                }
-                valueString += raw.charAt(i);
-            }
-                if (start) {
-                    v = value(valueString);
-                } else
-                    v = currentOperator.apply(v, value(valueString));
-                if(start)
-                    start = false;
-        }
-        System.out.println(v + "sadasg");
-        return v;
-    }*/
 
     @Override
     public String toString() {
@@ -161,7 +105,7 @@ public class Expression{
                 first = false;
             else
                 output += "; ";
-                output += (elements.get(i).getClassObject() == this.getClass() ? elements.get(i).getObject().toString() : elements.get(i).getClassObject().getName());
+                output += (elements.get(i).getClassObject() == this.getClass() ? elements.get(i).getObject().toString() : elements.get(i).getObject().toString());
 
         }
         output += " }";

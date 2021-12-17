@@ -17,13 +17,8 @@ public class Main extends Application {
         primaryStage.show();
         String string = new String("  ");
         System.out.println("" + string.trim().equals("") + string.equals(""));
-        //System.out.println(string.substring(0));
-        //Expression expression = new Expression("(false = false + 3) = 4");
-        //System.out.println(expression.extract());
-        Expression expression = new Expression("(false = true) + (1)");
+        Expression expression = new Expression("(false = true) + (1) = (0 + 1)");
         System.out.println(expression);
-        //InstructionSet instructionSet = (Class.forName("InstructionSet")) object;
-        //instructionSet.
     }
 
 
