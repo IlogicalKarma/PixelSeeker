@@ -6,11 +6,13 @@ import PixelSeeker.exceptions.ExpressionExtractionFailureException;
 
 public class Expression{
     private String raw;
-    private Boolean b = null;
+    private boolean bool = false;
+    private int value = 0;
     private OperatorHandler.Operator[] operators = OperatorHandler.operators.operatorsArray;
     private MultiClassArray elements = new MultiClassArray();
     public Expression(String raw) throws ExpressionExtractionFailureException{
         raw = raw.trim();
+        this.raw = raw;
         String valueString = new String();
         Integer value;
         Expression expression;
@@ -58,20 +60,44 @@ public class Expression{
             value = Integer.valueOf(value(valueString));
             elements.add(value, value.getClass());
         }
+        toBoolean();
     }
     private void toBoolean() throws ExpressionExtractionFailureException{
-        int size = elements.size();
+        int i = 0, size = elements.size(), v = 0, currentV;
+        OperatorHandler.Operator cOperator = null;
         Parcel parcel;
-        for(int i = 0; i < size; i++){
+        System.out.println(size + "unde trb");
+
+        for(; i < size; i++){
             parcel = elements.get(i);
+            ;
             if(i%2 == 0){
-                if(!(parcel.getObject() instanceof Integer))
-                    throw new ExpressionExtractionFailureException("Expected operator");
+                if(!(parcel.getObject() instanceof Integer || parcel.getObject() instanceof Expression) )
+                    throw new ExpressionExtractionFailureException("Expected value or expression at element " + i);
+                if(parcel.getObject() instanceof Expression) {
+                    if(i == 0) {
+                        v = ((Expression) parcel.getObject()).value;
+                        continue;
+                    }else
+                        currentV = ((Expression) parcel.getObject()).value;
+                }else {
+                    if(i == 0) {
+                        v = ((Integer) parcel.getObject());
+                        continue;
+                    } else
+                        currentV = ((Integer) parcel.getObject());
+                }
+                    v = cOperator.apply(v,currentV);
             }else{
                 if(!(parcel.getObject() instanceof OperatorHandler.Operator))
-                    throw new ExpressionExtractionFailureException("Expected value");
+                    throw new ExpressionExtractionFailureException("Expected operator at element " + i);
+                cOperator = (OperatorHandler.Operator) parcel.getObject();
             }
         }
+        if(i%2 == 0)
+            throw new ExpressionExtractionFailureException("Expected value at element " + i);
+        bool = v % 2 == 1;
+        value = v;
     }
     private int value(String string) throws ExpressionExtractionFailureException{
         string = string.trim().toLowerCase();
@@ -104,11 +130,11 @@ public class Expression{
             if(first)
                 first = false;
             else
-                output += "; ";
-                output += (elements.get(i).getClassObject() == this.getClass() ? elements.get(i).getObject().toString() : elements.get(i).getObject().toString());
+                output += " ";
+                output += (elements.get(i).getObject().toString());
 
         }
-        output += " }";
+        output += " | Value: " + bool + " }";
         return output;
     }
 }

@@ -1,5 +1,7 @@
 package PixelSeeker.expressions;
 
+import java.util.Arrays;
+
 public class OperatorHandler {
     private OperatorHandler(){}
     public static OperatorHandler operators = new OperatorHandler();
@@ -30,6 +32,10 @@ public class OperatorHandler {
                 return 1;
             return 0;
         }
+        @Override
+        public String toString() {
+            return representations[0];
+        }
     }
 
     public class Divide extends Operator{
@@ -42,9 +48,12 @@ public class OperatorHandler {
             }
             return false;
         }
-
         public int apply(int before, int after) {
             return before / after;
+        }
+        @Override
+        public String toString() {
+            return representations[0];
         }
     }
 
@@ -58,9 +67,12 @@ public class OperatorHandler {
             }
             return false;
         }
-
         public int apply(int before, int after) {
             return before * after;
+        }
+        @Override
+        public String toString() {
+            return representations[0];
         }
     }
 
@@ -74,9 +86,12 @@ public class OperatorHandler {
             }
             return false;
         }
-
         public int apply(int before, int after) {
             return before % after;
+        }
+        @Override
+        public String toString() {
+            return representations[0];
         }
     }
 
@@ -90,9 +105,12 @@ public class OperatorHandler {
             }
             return false;
         }
-
         public int apply(int before, int after) {
             return before + after;
+        }
+        @Override
+        public String toString() {
+            return representations[0];
         }
     }
 
@@ -106,9 +124,12 @@ public class OperatorHandler {
             }
             return false;
         }
-
         public int apply(int before, int after) {
             return before - after;
+        }
+        @Override
+        public String toString() {
+            return representations[0];
         }
     }
 }
