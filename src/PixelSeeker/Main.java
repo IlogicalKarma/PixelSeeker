@@ -1,5 +1,6 @@
 package PixelSeeker;
 
+import PixelSeeker.expressions.CheckHandler;
 import PixelSeeker.expressions.Expression;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -19,6 +20,8 @@ public class Main extends Application {
         System.out.println("" + string.trim().equals("") + string.equals(""));
         Expression expression = new Expression("(false = true) + (1) = (0 + 1)");
         System.out.println(expression);
+        CheckHandler.True check = new CheckHandler.True();
+        CheckHandler.True.
     }
 
 

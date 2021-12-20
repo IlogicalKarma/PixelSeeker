@@ -8,7 +8,7 @@ public class Expression{
     private String raw;
     private boolean bool = false;
     private int value = 0;
-    private OperatorHandler.Operator[] operators = OperatorHandler.operators.operatorsArray;
+    private OperatorHandler.Operator[] operators = OperatorHandler.getInstance().getOperatorsArray();
     private MultiClassArray elements = new MultiClassArray();
     public Expression(String raw) throws ExpressionExtractionFailureException{
         raw = raw.trim();
