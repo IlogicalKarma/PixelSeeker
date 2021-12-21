@@ -6,7 +6,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
 public class Main extends Application {
 
     @Override
@@ -17,7 +16,7 @@ public class Main extends Application {
         primaryStage.show();
         String string = new String("  ");
         System.out.println("" + string.trim().equals("") + string.equals(""));
-        Expression expression = new Expression("(false = true) + (1) = (0 + 1)");
+        Expression expression = new Expression("(false = true) + (1 )= (0 + 1)");
         System.out.println(expression);
     }
 

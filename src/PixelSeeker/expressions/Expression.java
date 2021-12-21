@@ -20,7 +20,6 @@ public class Expression{
         boolean valueBypass = false, notEmpty = false;
         OperatorHandler.Operator operator;
         while(i < raw.length()){
-            System.out.println(i + " " + raw.charAt(i));
             char current = raw.charAt(i++);
             if(current == '(') {
                 nested = 1;
@@ -66,8 +65,6 @@ public class Expression{
         int i = 0, size = elements.size(), v = 0, currentV;
         OperatorHandler.Operator cOperator = null;
         Parcel parcel;
-        System.out.println(size + "unde trb");
-
         for(; i < size; i++){
             parcel = elements.get(i);
             ;
