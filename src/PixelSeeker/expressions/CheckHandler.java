@@ -2,34 +2,43 @@ package PixelSeeker.expressions;
 
 public class CheckHandler {
     private CheckHandler(){}
-    True objectTrue = new True();
-    Check[] checksArray = {objectTrue};
-    static private class Check{
+    private static True objectTrue = new True();
+    private static Check[] checksArray = {objectTrue};
+    public static Check[] getChecksArray() {
+        return checksArray;
+    }
+
+    static public class Check{
         protected int status;
-        protected static String representation = " ";
-        Check(int status, String representation){
+        protected String representation = " ";
+        protected Check(int status, String representation){
             this.status = status;
             this.representation = representation;
+        }
+        public int extractProcedure(){
+            System.out.println("CHECK");
+            return 1;
         }
         public int getStatus(){
             return status;
         }
-        public static boolean verify(String string){
+        public boolean verify(String string){
             return string.equals(representation);
         }
-        public static int extractProcedure(){
-            return 0;
-        }
+
     }
-    static public class True extends Check{
+    static private class True extends Check{
 
-        True(){
-            super(1,"true");
+        public True(){
+            super(1,"alwaysTrue");
         }
+
         @Override
-        public static int extractProcedure(){
+        public int extractProcedure() {
+
+
+            return 1;
 
         }
-
     }
 }

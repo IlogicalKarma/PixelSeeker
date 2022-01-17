@@ -66,8 +66,6 @@ public class Expression{
         int i = 0, size = elements.size(), v = 0, currentV;
         OperatorHandler.Operator cOperator = null;
         Parcel parcel;
-        System.out.println(size + "unde trb");
-
         for(; i < size; i++){
             parcel = elements.get(i);
             ;
@@ -107,6 +105,10 @@ public class Expression{
             return 1;
         if(string.equals("false"))
             return 0;
+        for(CheckHandler.Check check : CheckHandler.getChecksArray()){
+            if(check.verify(string))
+                return check.extractProcedure();
+        }
         try {
             return Integer.parseInt(string);
         } catch (NumberFormatException e){
