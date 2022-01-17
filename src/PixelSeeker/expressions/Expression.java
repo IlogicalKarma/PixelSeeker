@@ -2,6 +2,7 @@ package PixelSeeker.expressions;
 
 import PixelSeeker.MultiClassArray;
 import PixelSeeker.Parcel;
+import PixelSeeker.exceptions.CheckLookupException;
 import PixelSeeker.exceptions.ExpressionExtractionFailureException;
 
 public class Expression{
@@ -100,10 +101,11 @@ public class Expression{
         string = string.trim().toLowerCase();
         if(string == null)
             throw new ExpressionExtractionFailureException("Null value");
-        if(string.equals("true"))
-            return 1;
-        if(string.equals("false"))
-            return 0;
+        try{
+            return CheckHandler.returnFind(string);
+        } catch (CheckLookupException e){
+            System.out.println(e.toString());
+        }
         try {
             return Integer.parseInt(string);
         } catch (NumberFormatException e){

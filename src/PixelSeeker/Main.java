@@ -16,7 +16,7 @@ public class Main extends Application {
         primaryStage.show();
         String string = new String("  ");
         System.out.println("" + string.trim().equals("") + string.equals(""));
-        Expression expression = new Expression("(false = true) + (1 )= (0 + 1)");
+        Expression expression = new Expression("(false = True) + (1 )= (0 + 1)");
         System.out.println(expression);
     }
 

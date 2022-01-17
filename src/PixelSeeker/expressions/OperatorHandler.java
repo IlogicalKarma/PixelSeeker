@@ -19,7 +19,7 @@ public class OperatorHandler {
     public class Equals extends Operator{
         private String[] representations = {"="};
         private Equals(){}
-        public boolean verify(String string) {
+        public boolean verify(String string) {                                                                                                                                 
             for (int i = 0; i < representations.length; i++) {
                 if (representations[i].equals(string))
                     return true;
