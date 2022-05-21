@@ -8,11 +8,11 @@ public class KeyPress extends ActionType {
     private int lengthMili;
     private int key = -1;
     private Robot robot;
-    KeyPress() throws java.awt.AWTException{
+    public KeyPress() throws java.awt.AWTException{
         this.lengthMili = 100;
         robot = new Robot();
     }
-    KeyPress(int key) throws java.awt.AWTException{
+    public KeyPress(int key) throws java.awt.AWTException{
         this(key,100);
     }
     KeyPress(int key, int lengthMili) throws java.awt.AWTException{
@@ -22,6 +22,7 @@ public class KeyPress extends ActionType {
     }
     @Override
     public void use() {
+        System.out.println("APASAT");
         robot.keyPress(key);
         try{ Thread.sleep(lengthMili); } catch (java.lang.InterruptedException e) { e.printStackTrace(); System.out.println(e.toString()); }
         robot.keyRelease(key);

@@ -121,6 +121,13 @@ public class Expression{
         return null;
     }
 
+    public int getValue() {
+        return value;
+    }
+    public boolean getBool(){
+        return bool;
+    }
+
     @Override
     public String toString() {
         String output = "Expression: { ";
@@ -133,7 +140,7 @@ public class Expression{
                 output += (elements.get(i).getObject().toString());
 
         }
-        output += " | Value: " + bool + " }";
+        output += " | Value: " + value + " }";
         return output;
     }
 }

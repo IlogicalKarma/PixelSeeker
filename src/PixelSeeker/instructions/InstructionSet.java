@@ -8,7 +8,7 @@ public class InstructionSet {
     private ArrayList<ActionType> actions;
     private ArrayList<StatementType> statements;
     private ArrayList<String> tracker;
-    InstructionSet(){
+    public InstructionSet(){
         tracker = new ArrayList<>();
         statements = new ArrayList<>();
         statements.add(null);
