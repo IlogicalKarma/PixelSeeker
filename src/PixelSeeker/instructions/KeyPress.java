@@ -1,5 +1,6 @@
 package PixelSeeker.instructions;
 
+import PixelSeeker.expressions.Expression;
 import PixelSeeker.instructions.ActionType;
 
 import java.awt.*;
@@ -12,8 +13,8 @@ public class KeyPress extends ActionType {
         this.lengthMili = 100;
         robot = new Robot();
     }
-    public KeyPress(int key) throws java.awt.AWTException{
-        this(key,100);
+    public KeyPress(Expression key) throws java.awt.AWTException{
+        this(key.getValue(),100);
     }
     KeyPress(int key, int lengthMili) throws java.awt.AWTException{
         this.key = key;
@@ -22,7 +23,6 @@ public class KeyPress extends ActionType {
     }
     @Override
     public void use() {
-        System.out.println("APASAT");
         robot.keyPress(key);
         try{ Thread.sleep(lengthMili); } catch (java.lang.InterruptedException e) { e.printStackTrace(); System.out.println(e.toString()); }
         robot.keyRelease(key);

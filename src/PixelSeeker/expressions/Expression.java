@@ -9,7 +9,7 @@ public class Expression{
     private String raw;
     private boolean bool = false;
     private int value = 0;
-    private OperatorHandler.Operator[] operators = OperatorHandler.operators.operatorsArray;
+    private OperatorHandler.Operator[] operators = OperatorHandler.getInstance().getOperatorsArray();
     private MultiClassArray elements = new MultiClassArray();
     public Expression(String raw) throws ExpressionExtractionFailureException{
         raw = raw.trim();
@@ -99,17 +99,20 @@ public class Expression{
     }
     private int value(String string) throws ExpressionExtractionFailureException{
         string = string.trim().toLowerCase();
+        int r;
         if(string == null)
             throw new ExpressionExtractionFailureException("Null value");
         try{
-            return CheckHandler.returnFind(string);
+            r = CheckHandler.returnFind(string);
+            return r;
         } catch (CheckLookupException e){
             System.out.println(e.toString());
         }
         try {
-            return Integer.parseInt(string);
+            r = Integer.parseInt(string);
+            return r;
         } catch (NumberFormatException e){
-            throw new ExpressionExtractionFailureException("Illegal value: \"" + string + "\"");
+            throw new ExpressionExtractionFailureException("Ilegal value: \"" + string + "\"");
         }
     }
     private OperatorHandler.Operator operatorLookup(char character){

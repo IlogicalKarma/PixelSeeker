@@ -8,7 +8,6 @@ public class IfStatement extends StatementType{
     }
     @Override
     public void execute() {
-        System.out.println(expression.getBool() + "eeee");
         if(expression.getBool())
             instructionSet.execute();
     }
