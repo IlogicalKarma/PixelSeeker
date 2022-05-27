@@ -15,7 +15,6 @@ public class Main {
     static int ln = 0;
     static InstructionSet main = new InstructionSet();
     static InstructionSet read(String level) throws ExpressionExtractionFailureException, java.awt.AWTException, SyntaxException {
-        String line;
         String[] split;
         InstructionSet instructionSet = new InstructionSet();
         while(input.length > ln){
@@ -23,6 +22,7 @@ public class Main {
                 return instructionSet;
             split = input[ln].split(" ");
             System.out.println(split[0]);
+            InstructionHandler.retrieve()
                 switch (split[0].split(" ")[0]) {
                     case "if":
                         instructionSet.add(new IfStatement(new Expression(input[ln++].substring(2)), read(level+"   ")));

@@ -4,18 +4,17 @@ import PixelSeeker.exceptions.IncorrectParameterNumberException;
 import PixelSeeker.exceptions.MissingInstructionSetException;
 import PixelSeeker.expressions.Expression;
 
-public class IfStatement extends Instruction{
-    final static String identifier = "if";
-    public IfStatement(Expression[] param, InstructionSet instructionSet) throws IncorrectParameterNumberException, MissingInstructionSetException {
-
-        super(param, 0, instructionSet, "IfStatement");
+public class WhileStatement extends Instruction{
+    final static String identifier = "while";
+    public WhileStatement(Expression[] param, InstructionSet instructionSet) throws IncorrectParameterNumberException, MissingInstructionSetException {
+        super(param, 1, instructionSet, "WhileStatement");
         if(instructionSet == null)
             throw new MissingInstructionSetException();
     }
 
     @Override
     public void execute() {
-        if(param[0].getBool())
+        while(param[0].getBool())
             instructionSet.execute();
     }
 }

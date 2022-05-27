@@ -2,6 +2,8 @@ package PixelSeeker.expressions;
 
 import PixelSeeker.exceptions.CheckLookupException;
 
+import java.util.Scanner;
+
 public class CheckHandler {
     private static Check[] list = {new AlwaysTrue(), new AlwaysFalse()};
     private static class Check{
@@ -17,25 +19,27 @@ public class CheckHandler {
         }
     }
     private static class AlwaysTrue extends Check{
-        public AlwaysTrue(){
+        protected AlwaysTrue(){
             super("true");
         }
         @Override
         public int extractProcedure() {
             return 1;
         }
-        @Override
-        public boolean verify(String string) {
-            return string.equals(representation);
-        }
     }
     private static class AlwaysFalse extends Check{
-        public AlwaysFalse(){
+        protected AlwaysFalse(){
             super("false");
         }
+    }
+    private static class In extends Check{
+        private static Scanner scanner = new Scanner(System.in);
+        protected In(){
+            super("in");
+        }
         @Override
-        public boolean verify(String string) {
-            return string.equals(representation);
+        public int extractProcedure(){
+            return scanner.nextInt();
         }
     }
     public static int returnFind(String string) throws CheckLookupException {
