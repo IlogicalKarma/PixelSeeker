@@ -37,6 +37,11 @@ public class Main {
         return instructionSet;
     }
     public static void main(String[] args) {
+        System.out.println();
+        if(args.length < 1){
+            System.out.println("Provided empty path");
+            return;
+        }
         String p = args[0];
         if(!p.endsWith(".pskr")){
             System.out.println("Invalid file type. File must be of type \".pskr\".");
