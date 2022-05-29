@@ -1,7 +1,5 @@
 package PixelSeeker.instructions;
 
-import PixelSeeker.exceptions.UnrecognizedTypeException;
-
 import java.util.ArrayList;
 
 public class InstructionSet {
@@ -16,11 +14,10 @@ public class InstructionSet {
     public int size(){
         return  instructions.size();
     }
-    public void execute() throws UnrecognizedTypeException {
+    public void execute() throws  PixelSeeker.exceptions.ExpressionExtractionFailureException, PixelSeeker.exceptions.InvalidVariableNameException, PixelSeeker.exceptions.IncorrectParametersException{
         int limit = instructions.size();
-        for(int i = 0; i < limit; i++){
+        for (int i = 0; i < limit; i++) {
             instructions.get(i).execute();
         }
     }
-
 }

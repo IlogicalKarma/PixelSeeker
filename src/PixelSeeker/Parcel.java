@@ -3,7 +3,7 @@ package PixelSeeker;
 public class Parcel {
     private Object object;
     private Class classObject;
-    Parcel(Object object, Class classObject) {
+    public Parcel(Object object, Class classObject) {
         this.object = object;
         this.classObject = classObject;
     }

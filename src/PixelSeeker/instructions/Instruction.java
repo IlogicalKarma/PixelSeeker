@@ -1,22 +1,22 @@
 package PixelSeeker.instructions;
 
-import PixelSeeker.exceptions.IncorrectParameterNumberException;
+import PixelSeeker.exceptions.ExpressionExtractionFailureException;
+import PixelSeeker.exceptions.IncorrectParametersException;
+import PixelSeeker.exceptions.InvalidVariableNameException;
 import PixelSeeker.expressions.Expression;
 
 public abstract class Instruction {
-    Expression param[];
+    Expression[] param;
     InstructionSet instructionSet;
-    static String type;
-    static String identifier;
+    String  type;
+    String identifier;
     int paramNr = 0;
-    public Instruction(Expression param[], int paramNr, InstructionSet instructionSet, String type) throws IncorrectParameterNumberException {
+    public Instruction(Expression[] param, int paramNr, InstructionSet instructionSet) throws IncorrectParametersException {
         this.paramNr = paramNr;
         if(param.length != paramNr && paramNr != -1)
-            throw new IncorrectParameterNumberException(paramNr, param.length);
+            throw new IncorrectParametersException(paramNr, param.length);
         this.instructionSet = instructionSet;
         this.param = param;
-        this.type = type;
     }
-    public abstract void execute();
+    public abstract void execute() throws ExpressionExtractionFailureException, InvalidVariableNameException, IncorrectParametersException;
 }
-//not needed

@@ -4,131 +4,167 @@ import PixelSeeker.MultiClassArray;
 import PixelSeeker.Parcel;
 import PixelSeeker.exceptions.CheckLookupException;
 import PixelSeeker.exceptions.ExpressionExtractionFailureException;
+import PixelSeeker.exceptions.UnexpectedDataTypeException;
+import PixelSeeker.instructions.Var;
+import PixelSeeker.instructions.VarManagement;
 
 public class Expression{
+    private String type;
     private String raw;
-    private boolean bool = false;
+    private boolean bool = false, isVarV = false;
     private int value = 0;
-    private OperatorHandler.Operator[] operators = OperatorHandler.getInstance().getOperatorsArray();
+    private Var var = null;
+    private Parcel parcel = null;
+    private String string = "";
+    private OperatorHandler operators = OperatorHandler.getInstance();
     private MultiClassArray elements = new MultiClassArray();
     public Expression(String raw) throws ExpressionExtractionFailureException{
         raw = raw.trim();
         this.raw = raw;
         String valueString = new String();
-        Integer value;
-        Expression expression;
-        int nested, j, i = 0;
-        boolean valueBypass = false, notEmpty = false;
+        String op = new String();
+        int i = 0, elem = 0, nests, nestIndex;
         OperatorHandler.Operator operator;
-        while(i < raw.length()){
-            char current = raw.charAt(i++);
-            if(current == '(') {
-                nested = 1;
-                j = i;
-                while(nested != 0){
-                    if(j == raw.length())
-                        throw new ExpressionExtractionFailureException("Expected \")\"");
-                    j++;
-                    if(raw.charAt(j) == ')')
-                        nested--;
-                    else if(raw.charAt(j) == '(')
-                        nested++;
-                }
-                int lastIndex = j;
-                if (!valueString.trim().isEmpty())
-                    throw new ExpressionExtractionFailureException("Illegal expression positioning: " + valueString.trim());
-                if (lastIndex == -1)
-                    throw new ExpressionExtractionFailureException("Unfinished expression: " + valueString.trim());
-                expression = new Expression(raw.substring(i, lastIndex));
-                elements.add(expression, expression.getClass());
-                i = lastIndex + 1;
-                valueBypass = true;
-            } else if(operatorLookup(current) != null) {
-                operator = operatorLookup(current);
-                if (!valueBypass){
-                    value = Integer.valueOf(value(valueString));
-                    elements.add(value, value.getClass());
-                }else
-                    valueBypass = false;
-                elements.add(operator, operator.getClass());
-                valueString = new String();
-                current = raw.charAt(i++);
-            }
-            valueString += current;
-        }
-        if (!valueBypass){
-            value = Integer.valueOf(value(valueString));
-            elements.add(value, value.getClass());
-        }
-        toBoolean();
-    }
-    private void toBoolean() throws ExpressionExtractionFailureException{
-        int i = 0, size = elements.size(), v = 0, currentV;
-        OperatorHandler.Operator cOperator = null;
-        Parcel parcel;
-        for(; i < size; i++){
-            parcel = elements.get(i);
-            ;
-            if(i%2 == 0){
-                if(!(parcel.getObject() instanceof Integer || parcel.getObject() instanceof Expression) )
-                    throw new ExpressionExtractionFailureException("Expected value or expression at element " + i);
-                if(parcel.getObject() instanceof Expression) {
-                    if(i == 0) {
-                        v = ((Expression) parcel.getObject()).value;
-                        continue;
+        char current;
+        while(i < raw.length()) {
+            current = raw.charAt(i++);
+            if (elem % 2 == 0) {
+                if (operators.operatorWhitelist(current)) {
+                    i--;
+                    elem++;
+                    elements.add(value(valueString));
+                    valueString = new String();
+                }else{
+                    if(current == '('){
+                        nestIndex = i-1;
+                        nests = 1;
+                        while(i < raw.length() && nests != 0)
+                            if(raw.charAt(i++) == '(')
+                                nests++;
+                            else if(raw.charAt(i-1) == ')')
+                                nests--;
+                        if(nests != 0)
+                            throw new ExpressionExtractionFailureException("Incorrect expression brackets placement.");
+                        valueString = raw.substring(nestIndex,i);
+                    }else if(current == '"'){
+                        nestIndex = i-1;
+                        nests = 1;
+                        while(i < raw.length() && nests != 0)
+                            if(raw.charAt(i++) == '"')
+                                nests--;
+                        if(nests != 0)
+                            throw new ExpressionExtractionFailureException("Incorrect expression brackets placement.");
+                        valueString = raw.substring(nestIndex,i);
                     }else
-                        currentV = ((Expression) parcel.getObject()).value;
-                }else {
-                    if(i == 0) {
-                        v = ((Integer) parcel.getObject());
-                        continue;
-                    } else
-                        currentV = ((Integer) parcel.getObject());
+                        valueString += current;
                 }
-                    v = cOperator.apply(v,currentV);
-            }else{
-                if(!(parcel.getObject() instanceof OperatorHandler.Operator))
-                    throw new ExpressionExtractionFailureException("Expected operator at element " + i);
-                cOperator = (OperatorHandler.Operator) parcel.getObject();
+            } else {
+                if(operators.operatorWhitelist(current)) {
+                    op += current;
+                }else{
+                    i--;
+                    elem++;
+                    operator = operators.operatorLookup(op);
+                    op = new String();
+                    if (operator == null)
+                        throw new ExpressionExtractionFailureException("Invalid operator: " + op);
+                    elements.add(operator, operator.getClass());
+                }
             }
         }
-        if(i%2 == 0)
-            throw new ExpressionExtractionFailureException("Expected value at element " + i);
-        bool = v % 2 == 1;
-        value = v;
+        elements.add(value(valueString));
+        if(elem%2 == 1)
+            throw new ExpressionExtractionFailureException("Expected value in expression.");
     }
-    private int value(String string) throws ExpressionExtractionFailureException{
-        string = string.trim().toLowerCase();
-        int r;
+    public void extract() throws ExpressionExtractionFailureException{
+        int i = 1, size = elements.size();
+        isVarV = false;
+        Parcel v = elements.get(0);
+        if(i < size && v.getClassObject().equals(Var.class))
+            v = ((Var)v.getObject()).getValue();
+        while(i < size) {
+            try {
+                if(elements.get(i+1).getClassObject().equals(Var.class))
+                    v = ((OperatorHandler.Operator) elements.get(i).getObject()).apply(v, ((Var) elements.get(i+1).getObject()).getValue());
+                else
+                    v = ((OperatorHandler.Operator) elements.get(i).getObject()).apply(v, elements.get(i + 1));
+            }catch (UnexpectedDataTypeException e){
+                throw new ExpressionExtractionFailureException("Failed to apply operator.",e);
+            }
+            i += 2;
+        }
+        this.parcel = v;
+        if(v.getClassObject().equals(Integer.class)) {
+            type = "Num";
+            value = (int) v.getObject();
+            bool = value % 2 == 1;
+        }else if(v.getClassObject().equals(String.class)){
+            type = "String";
+            string = (String) v.getObject();
+        }else if(v.getClassObject().equals(Var.class)){
+            isVarV = true;
+            var = (Var) v.getObject();
+            if(var.getValue().getClassObject().equals(Integer.class)) {
+                type = "Num";
+                value = (int) var.getValue().getObject();
+                bool = value % 2 == 1;
+            }else if(var.getValue().getClassObject().equals(String.class)){
+                type = "String";
+                string = (String) var.getValue().getObject();
+            }
+        }
+    }
+    private Parcel value(String string) throws ExpressionExtractionFailureException{
+        string = string.trim();
+        Integer r;
         if(string == null)
             throw new ExpressionExtractionFailureException("Null value");
+        if(string.startsWith("\""))
+            return new Parcel(string.substring(1,string.length()-1), String.class);
+        string = string.toLowerCase();
+        if(string.startsWith("("))
+            return new Parcel(new Expression(string.substring(1,string.length()-1)).getValue(), Integer.class);
         try{
             r = CheckHandler.returnFind(string);
-            return r;
-        } catch (CheckLookupException e){
-            System.out.println(e.toString());
-        }
+            return new Parcel(r,Integer.class);
+        } catch (CheckLookupException e){}
+        if(VarManagement.getVar(string) != null)
+            return new Parcel(VarManagement.getVar(string), Var.class);
         try {
             r = Integer.parseInt(string);
-            return r;
+            return new Parcel(r,Integer.class);
         } catch (NumberFormatException e){
-            throw new ExpressionExtractionFailureException("Ilegal value: \"" + string + "\"");
+            return new Parcel(new Var(string), Var.class);
         }
+
     }
-    private OperatorHandler.Operator operatorLookup(char character){
-        for(int i = 0; i < operators.length; i++){
-            if(operators[i].verify(String.valueOf(character))) {
-                return operators[i];
-            }
-        }
-        return null;
+
+    public String getType() {
+        return type;
     }
 
     public int getValue() {
         return value;
     }
+
     public boolean getBool(){
         return bool;
+    }
+
+    public String getString() {
+        return string;
+    }
+
+    public Parcel getParcel() {
+        return parcel;
+    }
+
+    public Var getVar() {
+        return var;
+    }
+
+    public boolean isVar(){
+        return isVarV;
     }
 
     @Override
