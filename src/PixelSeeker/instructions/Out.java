@@ -20,7 +20,6 @@ public class Out extends Instruction{
             System.out.println("There are no values to output.");
             return;
         }
-        System.out.print("Output values: ");
         for(int i = 0; i < paramNr; i++){
             if(i != 0)
                 System.out.print(", ");
@@ -30,6 +29,6 @@ public class Out extends Instruction{
                 p = ((Var)param[0].getParcel().getObject()).getValue();
             System.out.print(p.getClassObject().cast(p.getObject()));
         }
-        System.out.print('\n');
+        System.out.println();
     }
 }

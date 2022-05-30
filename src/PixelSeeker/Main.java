@@ -37,7 +37,6 @@ public class Main {
         return instructionSet;
     }
     public static void main(String[] args) {
-        System.out.println();
         if(args.length < 1){
             System.out.println("Provided empty path");
             return;
