@@ -125,7 +125,7 @@ public class Expression{
         if(string.startsWith("(")) {
             Expression nestedExpression = new Expression(string.substring(1, string.length() - 1));
             nestedExpression.extract();
-            return new Parcel(nestedExpression.getValue(), Integer.class);
+            return nestedExpression.getParcel();
         }try{
             r = CheckHandler.returnFind(string);
             return new Parcel(r,Integer.class);
