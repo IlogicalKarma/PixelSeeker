@@ -43,9 +43,11 @@ public class Expression{
                                 nests++;
                             else if(raw.charAt(i++) == ')')
                                 nests--;
-                        if(nests != 0)
+                        if(nests != 0 || !valueString.trim().isEmpty() )
                             throw new ExpressionExtractionFailureException("Incorrect expression brackets placement.");
                         valueString = raw.substring(nestIndex,i);
+                    }else if(current == ')'){
+                        throw new ExpressionExtractionFailureException("Incorrect expression brackets placement.");
                     }else if(current == '"'){
                         nestIndex = i-1;
                         nests = 1;
