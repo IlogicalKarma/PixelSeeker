@@ -39,9 +39,9 @@ public class Expression{
                         nestIndex = i-1;
                         nests = 1;
                         while(i < raw.length() && nests != 0)
-                            if(raw.charAt(i++) == '(')
+                            if(raw.charAt(i) == '(')
                                 nests++;
-                            else if(raw.charAt(i-1) == ')')
+                            else if(raw.charAt(i++) == ')')
                                 nests--;
                         if(nests != 0)
                             throw new ExpressionExtractionFailureException("Incorrect expression brackets placement.");
@@ -53,7 +53,7 @@ public class Expression{
                             if(raw.charAt(i++) == '"')
                                 nests--;
                         if(nests != 0)
-                            throw new ExpressionExtractionFailureException("Incorrect expression brackets placement.");
+                            throw new ExpressionExtractionFailureException("Incorrect string quotation mark placement.");
                         valueString = raw.substring(nestIndex,i);
                     }else
                         valueString += current;
@@ -122,9 +122,11 @@ public class Expression{
         if(string.startsWith("\""))
             return new Parcel(string.substring(1,string.length()-1), String.class);
         string = string.toLowerCase();
-        if(string.startsWith("("))
-            return new Parcel(new Expression(string.substring(1,string.length()-1)).getValue(), Integer.class);
-        try{
+        if(string.startsWith("(")) {
+            Expression nestedExpression = new Expression(string.substring(1, string.length() - 1));
+            nestedExpression.extract();
+            return new Parcel(nestedExpression.getValue(), Integer.class);
+        }try{
             r = CheckHandler.returnFind(string);
             return new Parcel(r,Integer.class);
         } catch (CheckLookupException e){}
