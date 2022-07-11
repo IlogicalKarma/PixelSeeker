@@ -1,21 +1,25 @@
 package PixelSeeker.instructions;
 
+import PixelSeeker.DataStorage.Element;
+import PixelSeeker.DataStorage.NameManagement;
 import PixelSeeker.exceptions.ExpressionExtractionFailureException;
 import PixelSeeker.exceptions.IncorrectParametersException;
-import PixelSeeker.exceptions.InvalidVariableNameException;
+import PixelSeeker.exceptions.InstructionSyntaxException;
 import PixelSeeker.expressions.Expression;
+
+import javax.naming.Name;
 
 public class Assign extends Instruction{
     static String type = "Assign";
     final static String identifier = "assign";
-    public Assign(Expression param[]) throws IncorrectParametersException, ExpressionExtractionFailureException {
-        super(param,2, null);
+    public Assign(Expression param, NameManagement context) throws InstructionSyntaxException {
+        super(param,2, null, false,context);
     }
-    public void execute() throws ExpressionExtractionFailureException, IncorrectParametersException  {
-        param[0].extract();
-        if(!param[0].isVar())
+    public Element execute() throws ExpressionExtractionFailureException, IncorrectParametersException  {
+        extract();
+        if(param.getElement(0).isNamed())
             throw new IncorrectParametersException("Supplied incorrect type of expression(first parameter). Required: Var");
-        param[1].extract();
-        ((Var)param[0].getParcel().getObject()).setValue(param[1].getParcel());
+        param.getElement(0).name(param.getElement(1).getName());
+        return null;
     }
 }

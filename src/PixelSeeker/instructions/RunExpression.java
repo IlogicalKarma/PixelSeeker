@@ -7,20 +7,14 @@ import PixelSeeker.exceptions.IncorrectParametersException;
 import PixelSeeker.exceptions.InstructionSyntaxException;
 import PixelSeeker.expressions.Expression;
 
-public class Out extends Instruction{
-    final static String identifier = "out";
-    static String type = "Out";
-    public Out(Expression paramExpression, NameManagement context) throws InstructionSyntaxException {
-        super(paramExpression, -1, null, false, context);
+public class RunExpression extends Instruction{
+    static String type = "RunExpression";
+    final static String identifier = "assign";
+    public RunExpression(Expression param, NameManagement context) throws InstructionSyntaxException {
+        super(param,-1, null, false, context);
     }
-    @Override
     public Element execute() throws ExpressionExtractionFailureException, IncorrectParametersException {
         extract();
-        if(param.getLength() == 0) {
-            System.out.println("\n");
-            return null;
-        }
-        System.out.print(param.toString());
         return null;
     }
 }
