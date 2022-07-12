@@ -31,7 +31,7 @@ public class Main {
             if(!input.get(ln).startsWith(level) && !level.isEmpty())
                 return instructionSet;
             splitter = input.get(ln).indexOf(' ');
-            firstArgument = splitter != -1 ? input.get(ln).substring(level.length(), input.get(ln).indexOf(' ')) : null;
+            firstArgument = splitter != -1 ? input.get(ln).substring(level.length(), input.get(ln).indexOf(' ')).trim() : null;
             if(firstArgument != null && InstructionHandler.canRetrieve(firstArgument)) {
                 expression = new Expression(input.get(ln).substring(input.get(ln).indexOf(' ')), mainContext);
                 ln++;
