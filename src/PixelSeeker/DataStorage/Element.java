@@ -1,37 +1,62 @@
 package PixelSeeker.DataStorage;
 
-import PixelSeeker.exceptions.ExpressionExtractionFailureException;
-import PixelSeeker.exceptions.NamingException;
-import PixelSeeker.exceptions.RuntimeErrorException;
+import PixelSeeker.exceptions.NamingErrorException;
 import PixelSeeker.expressions.OperatorHandler;
 
 public class Element {
+    public final static byte NUM = 1;
+    public final static byte STR = 2;
+    public final static byte ARR = 3;
+    public final static byte FUN = 4;
+    public final static byte EXPR = 5;
     private static char[] nameBlacklist = new char[]{'(', ')', '[', ']', '{', '}'};
-    protected boolean initialized = false;
+    private boolean initialized = false;
     private String name = null;
-    protected Object value = null;
-    private int type = 0; // 1 - Num, 2 - String, 3 - Array, 4 - Func, 5 - Expr
-    protected NameManagement context;
-    protected Element(String name, int type, Object value, NameManagement context) throws NamingException{
+    private Value value = null;
+    private NameManagement context;
+
+    public static Element getNum(Integer num){
+        return new Element(new NumericalValue(num));
+    }
+    public static Element getStr(String str){
+        return new Element(new StringValue(str));
+    }
+    public static Element getArr(Element[] arr){
+        return new Element(new ArrayValue(arr));
+    }
+    //public static Element getFunc()
+    public Element(byte type, Object obj) throws NamingErrorException {
+        switch (type){
+            case NUM:
+                this.value = new NumericalValue((Integer) obj);
+                break;
+            case STR:
+                this.value = new StringValue((String) obj);
+                break;
+            case ARR:
+                this.value = new ArrayValue((Element[]) obj);
+                break;
+            case FUN:
+                break;
+            default:
+                throw new RuntimeException("Internal error: wrong type");
+        }
+    }
+    public Element(String name, Value value, NameManagement context) throws NamingErrorException {
         for(char c : nameBlacklist)
             for(int i = name.length()-1; i >= 0; i--)
                 if(name.charAt(i) == c)
-                    throw new NamingException("Illegal character found in name: " + c);
+                    throw new NamingErrorException("Illegal character found in name: " + c);
         for(char c : OperatorHandler.WHITELIST)
             for(int i = name.length()-1; i >= 0; i--)
                 if(name.charAt(i) == c)
-                    throw new NamingException("Illegal character found in name: " + c);
+                    throw new NamingErrorException("Illegal character found in name: " + c);
         this.context = context;
         this.value = value;
-        this.type = type;
         this.name = name;
         context.set(name, this);
     }
-    protected Element(String name, int type, NameManagement context) throws NamingException{
-        this(name, type, 0, context);
-    }
-    protected Element(int type, Object value){
-        this.type = type;
+    public Element(Value value){
         this.value = value;
     }
     public String getName() {
@@ -40,18 +65,29 @@ public class Element {
     public void name(String name) {
         context.set(name, this);        //NOT USEFUL, REMOVE FROM ASSIGN
     }
-    public Object get() throws ExpressionExtractionFailureException {
+    public Value get() {
         return value;
     }
-    public void set(Object value){
+    public void set(Value value){
         this.value = value;
     }
-    public void setType(int type){
-        this.type = type;
-    }
-    public void copyTo(Element element){ // BROKEN!?!?!?!!?
-        element.setType(type);
+    public void copyTo(Element element){
         element.set(value);
+    }
+    public Integer toNum(){
+        if(isNum())
+            return ((NumericalValue) get()).value;
+        return null;
+    }
+    public String toStr(){
+        if(isStr())
+            return ((StringValue) get()).string;
+        return null;
+    }
+    public Element[] toArr(){
+        if(isArr())
+            return ((ArrayValue) get()).array;
+        return null;
     }
     public NameManagement getContext() {
         return context;
@@ -59,26 +95,26 @@ public class Element {
     public boolean isInitialized(){
         return initialized;
     }
-    public boolean isArray(){
-        return this.type == 3;
+    public boolean isArr(){
+        return this.value.type() == 3;
     }
     public boolean isNum(){
-        return type == 1;
+        return this.value.type()  == 1;
     }
-    public boolean isString(){
-        return type == 2;
+    public boolean isStr(){
+        return this.value.type()  == 2;
     }
     public boolean isNamed(){
         return name != null;
     }
     public boolean isExpr(){
-        return type == 5;
+        return this.value.type()  == 5;
     }
-    public boolean isFunc(){
-        return type == 4;
+    public boolean isFun(){
+        return this.value.type()  == 4;
     }
-    public boolean toBool() throws RuntimeErrorException{
-        throw new RuntimeErrorException("Cannot cast to boolean");
+    public boolean toBool(){
+        return value.toBool();
     }
     @Override
     public String toString() {

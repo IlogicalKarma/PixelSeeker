@@ -16,7 +16,7 @@ public class Out extends Instruction{
     @Override
     public Element execute() throws ExpressionExtractionFailureException, IncorrectParametersException {
         extract();
-        if(param.getLength() == 0) {
+        if(param.size() == 0) {
             System.out.println("\n");
             return null;
         }

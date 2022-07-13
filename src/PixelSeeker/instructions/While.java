@@ -12,26 +12,22 @@ import PixelSeeker.expressions.Expression;
 public class While extends Instruction{
     final static String identifier = "while";
     static String type = "WhileStatement";
-    public While(Expression param, InstructionSet instructionSet, NameManagement context) throws IncorrectParametersException, InstructionSyntaxException {
-        super(param, 1, instructionSet, true, context);
+    public While(Expression paramExpression, InstructionSet instructionSet, NameManagement context) throws InstructionSyntaxException {
+        super(paramExpression, 1, instructionSet, true, context);
     }
 
     @Override
     public Element execute() throws PixelSeeker.exceptions.InvalidVariableNameException, ExpressionExtractionFailureException, IncorrectParametersException, RuntimeErrorException {
-        extract();
-        if(!param.getElement(0).isNum())
-            throw new IncorrectParametersException("Supplied incorrect type of value. Required: Num");
-        NumericalElement p = (NumericalElement)param.getElement(0);
-        Element r;
-        while (p.toBool()){
+        Element r, p;
+        do{
+            extract();
+            p = param.get(0);
+            if(!p.isNum())
+                throw new IncorrectParametersException("Supplied incorrect type of expression. Required: Num");
             r = instructionSet.execute();
             if(r != null)
                 return r;
-            if(!param.getElement(0).isNum())
-                throw new IncorrectParametersException("Supplied incorrect type of expression. Required: Num");
-            extract();
-            p = (NumericalElement)param.getElement(0);
-        }
+        }while (p.toBool());
         return null;
     }
 }

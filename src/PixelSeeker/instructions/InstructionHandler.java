@@ -10,18 +10,18 @@ public class InstructionHandler{
     private InstructionHandler instructionHandler = new InstructionHandler();
     private InstructionHandler(){}
 
-    public static Instruction retrieve(String string, Expression param, InstructionSet instructionSet, NameManagement context) throws ExpressionExtractionFailureException, IncorrectParametersException, InstructionSyntaxException, java.awt.AWTException{
+    public static Instruction retrieve(String string, Expression paramExpression, InstructionSet instructionSet, NameManagement context) throws InstructionSyntaxException, java.awt.AWTException{
         switch (string.toLowerCase()){
             case If.identifier:
-                return new If(param, instructionSet, context);
+                return new If(paramExpression, instructionSet, context);
             case While.identifier:
-                return new While(param, instructionSet, context);
+                return new While(paramExpression, instructionSet, context);
             case KeyPress.identifier:
-                return new KeyPress(param, context);
+                return new KeyPress(paramExpression, context);
             case Out.identifier:
-                return new Out(param, context);
+                return new Out(paramExpression, context);
             case Assign.identifier:
-                return new Assign(param, context);
+                return new Assign(paramExpression, context);
             default:
                 return null;
         }

@@ -11,12 +11,13 @@ import PixelSeeker.expressions.Expression;
 public class Return extends Instruction{
     final static String identifier = "return";
     static String type = "Return";
-    public Return(Expression param, NameManagement context) throws InstructionSyntaxException {
-        super(param, 1, null, false, context);
+    public Return(Expression paramExpression, NameManagement context) throws InstructionSyntaxException, ExpressionExtractionFailureException {
+        super(paramExpression, -1, null, false, context);
     }
 
     @Override
     public Element execute() throws ExpressionExtractionFailureException, InvalidVariableNameException, IncorrectParametersException {
-        return param;
+        extract();
+        return paramElem;
     }
 }

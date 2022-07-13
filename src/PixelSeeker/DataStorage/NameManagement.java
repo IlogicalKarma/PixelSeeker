@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class NameManagement {
-    ArrayList<String> keys = new ArrayList<>();
-    ArrayList<Element> vals = new ArrayList<>();
     private HashMap<String, Element> names = new HashMap<>();
     public Element get(String n){
         return names.get(n);

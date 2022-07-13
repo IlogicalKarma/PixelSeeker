@@ -6,6 +6,10 @@ import PixelSeeker.DataStorage.NumericalElement;
 import PixelSeeker.DataStorage.StringElement;
 import PixelSeeker.exceptions.UnexpectedDataTypeException;
 
+import static PixelSeeker.DataStorage.Element.getNum;
+import static PixelSeeker.DataStorage.Element.getStr;
+import static PixelSeeker.DataStorage.Element.getArr;
+
 public class OperatorHandler {
     private OperatorHandler(){}
     private static final OperatorHandler operators = new OperatorHandler();
@@ -40,6 +44,7 @@ public class OperatorHandler {
                 return true;
         return false;
     }
+
     public static abstract class Operator{
         protected String[] representations;
         public boolean verify(String string) {
@@ -75,15 +80,15 @@ public class OperatorHandler {
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
             //Num
             if(before.isNum() && after.isNum()) {
-                if (((NumericalElement) before).get() == ((NumericalElement) after).get())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+                if (before.toNum() == after.toNum())
+                    return getNum(1);
+                return getNum(0);
             }
             //Str
-            if(before.isString() && after.isString()) {
-                if (((StringElement) before).get().equals(((StringElement) after).get()))
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+            if(before.isStr() && after.isStr()) {
+                if (before.toStr().equals(after.toStr()))
+                    return getNum(1);
+                return getNum(0);
             }
             return defaultBehaviour((new String[][]{ {"Num","Num"} }));
         }
@@ -97,15 +102,15 @@ public class OperatorHandler {
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
             //Num
             if(before.isNum() && after.isNum()) {
-                if (((NumericalElement) before).get() != ((NumericalElement) after).get())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+                if (before.toNum() != after.toNum())
+                    return getNum(1);
+                return getNum(0);
             }
             //Str
-            if(before.isString() && after.isString()) {
-                if (((StringElement) before).get().equals(((StringElement) after).get()))
-                    return new NumericalElement(0);
-                return new NumericalElement(1);
+            if(before.isStr() && after.isStr()) {
+                if ((before.toStr()).equals(after.toStr()))
+                    return getNum(0);
+                return getNum(1);
             }
             return defaultBehaviour((new String[][]{ {"Num","Num"} }));
         }
@@ -118,7 +123,7 @@ public class OperatorHandler {
 
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
             if(before.isNum() && after.isNum()) {
-                return new NumericalElement(((NumericalElement) before).get() / ((NumericalElement) after).get());
+                return getNum(before.toNum() / after.toNum());
             }
             return defaultBehaviour((new String[][]{ {"Num","Num"} }));
         }
@@ -136,7 +141,7 @@ public class OperatorHandler {
 
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
             if(before.isNum() && after.isNum())
-                return new NumericalElement(((NumericalElement) before).get()*((NumericalElement) after).get());
+                return getNum(before.toNum()* after.toNum());
             return defaultBehaviour((new String[][]{ {"Num","Num"} }));
         }
         @Override
@@ -152,7 +157,7 @@ public class OperatorHandler {
 
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
             if(before.isNum() && after.isNum())
-                return new NumericalElement(((NumericalElement) before).get()%((NumericalElement) after).get());
+                return getNum(before.toNum()% after.toNum());
             return defaultBehaviour((new String[][]{ {"Num","Num"} }));
         }
         @Override
@@ -169,20 +174,20 @@ public class OperatorHandler {
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
             //Sum
             if(before.isNum() && after.isNum())
-                return new NumericalElement(((NumericalElement) before).get()+((NumericalElement) after).get());
+                return getNum(before.toNum() + after.toNum());
             //Concat
-            if(before.isString() && after.isString())
-                return new StringElement(((StringElement) before).get()+((StringElement) after).get());
-            //Offset before
-            if(before.isString() && after.isNum()){
-                if(((NumericalElement) after).get() < 0)
-                    return minus.apply(before, new NumericalElement(Math.abs(((NumericalElement) after).get())));
-                if(((StringElement) before).getLength() > ((NumericalElement) after).get())
-                    return new StringElement(((StringElement) before).get().substring((int) ((NumericalElement) after).get()));
-                return new StringElement(new String());
+            if(before.isStr() && after.isStr())
+                return getStr(before.toStr() + after.toStr());
+            //Offset num before
+            if(before.isStr() && after.isNum()){
+                if(after.toNum() < 0)
+                    return minus.apply(before, getNum(Math.abs(after.toNum())));
+                if(before.toStr().length() > after.toNum())
+                    return getStr(before.toStr().substring(after.toNum()));
+                return getStr(new String());
             }
-            //Offset after
-            if(before.isNum() && after.isString())
+            //Offset num after
+            if(before.isNum() && after.isStr())
                 return apply(after,before);
             return defaultBehaviour(new String[][]{ {"Num", "Num"}, {"Num", "Str"}, {"Str", "Num"}, {"Str", "Str"} });
         }
@@ -200,17 +205,17 @@ public class OperatorHandler {
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
             //sub
             if(before.isNum() && after.isNum())
-                return new NumericalElement(Integer.valueOf(((NumericalElement) before).get()-((NumericalElement) after).get()));
-            //Offset before
-            if(before.isString() && after.isNum()){
-                if(((NumericalElement) after).get() < 0)
-                    return plus.apply(before, new NumericalElement(Math.abs(((NumericalElement) after).get())));
-                if(((StringElement) before).get().length() > ((NumericalElement) after).get())
-                    return new StringElement(((StringElement) before).get().substring(0,((StringElement) before).get().length()-((NumericalElement) after).get()));
-                return new StringElement();
+                return getNum(before.toNum() - before.toNum());
+            //Offset num after
+            if(before.isStr() && after.isNum()){
+                if(after.toNum() < 0)
+                    return plus.apply(before, getNum(Math.abs(after.toNum())));
+                if(before.toStr().length() > after.toNum())
+                    return getStr(before.toStr().substring(0,before.toStr().length() - after.toNum()));
+                return getStr(new String());
             }
-            //Offset after
-            if(before.isNum() && after.isString())
+            //Offset num before
+            if(before.isNum() && after.isStr())
                 return apply(after,before);
             return defaultBehaviour(new String[][]{ {"Num", "Num"}, {"Num", "Str"}, {"Str", "Num"}, {"Str", "Str"} });
         }
@@ -225,29 +230,29 @@ public class OperatorHandler {
         }
 
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
-            //Int
+            //Num
             if(before.isNum() && after.isNum()) {
-                if (((NumericalElement) before).get() < ((NumericalElement) after).get())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+                if (before.toNum() < after.toNum())
+                    return getNum(1);
+                return getNum(0);
             }
             //Str
-            if(before.isString() && after.isString()) {
-                if (((StringElement) before).get().length() < ((StringElement) after).get().length())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+            if(before.isStr() && after.isStr()) {
+                if (before.toStr().length() < after.toStr().length())
+                    return getNum(1);
+                return getNum(0);
             }
-            //Str, Int
-            if(before.isString() && after.isNum()) {
-                if (((StringElement) before).get().length() < ((NumericalElement) after).get())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+            //Str, Num
+            if(before.isStr() && after.isNum()) {
+                if (before.toStr().length() < after.toNum())
+                    return getNum(1);
+                return getNum(0);
             }
-            //Int, Str
-            if(before.isNum() && after.isString()){
-                if (((NumericalElement) after).get() < ((StringElement) before).get().length())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+            //Num, Str
+            if(before.isNum() && after.isStr()){
+                if (before.toNum() < after.toStr().length())
+                    return getNum(1);
+                return getNum(0);
             }
             return defaultBehaviour(new String[][]{ {"Num", "Num"}, {"Num", "Str"}, {"Str", "Num"}, {"Str", "Str"} });
         }
@@ -262,29 +267,29 @@ public class OperatorHandler {
         }
 
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
-            //Int
+            //Num
             if(before.isNum() && after.isNum()) {
-                if (((NumericalElement) before).get() > ((NumericalElement) after).get())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+                if (before.toNum() > after.toNum())
+                    return getNum(1);
+                return getNum(0);
             }
             //Str
-            if(before.isString() && after.isString()) {
-                if (((StringElement) before).get().length() > ((StringElement) after).get().length())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+            if(before.isStr() && after.isStr()) {
+                if (before.toStr().length() > after.toStr().length())
+                    return getNum(1);
+                return getNum(0);
             }
-            //Str, Int
-            if(before.isString() && after.isNum()) {
-                if (((StringElement) before).get().length() > ((NumericalElement) after).get())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+            //Str, Num
+            if(before.isStr() && after.isNum()) {
+                if (before.toStr().length() > after.toNum())
+                    return getNum(1);
+                return getNum(0);
             }
-            //Int, Str
-            if(before.isNum() && after.isString()){
-                if (((NumericalElement) after).get() > ((StringElement) before).get().length())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+            //Num, Str
+            if(before.isNum() && after.isStr()){
+                if (before.toNum() > after.toStr().length())
+                    return getNum(1);
+                return getNum(0);
             }
             return defaultBehaviour(new String[][]{ {"Num", "Num"}, {"Num", "Str"}, {"Str", "Num"}, {"Str", "Str"} });
         }
@@ -299,29 +304,29 @@ public class OperatorHandler {
         }
 
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
-            //Int
+            //Num
             if(before.isNum() && after.isNum()) {
-                if (((NumericalElement) before).get() <= ((NumericalElement) after).get())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+                if (before.toNum() <= after.toNum())
+                    return getNum(1);
+                return getNum(0);
             }
             //Str
-            if(before.isString() && after.isString()) {
-                if (((StringElement) before).get().length() <= ((StringElement) after).get().length())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+            if(before.isStr() && after.isStr()) {
+                if (before.toStr().length() <= after.toStr().length())
+                    return getNum(1);
+                return getNum(0);
             }
-            //Str, Int
-            if(before.isString() && after.isNum()) {
-                if (((StringElement) before).get().length() <= ((NumericalElement) after).get())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+            //Str, Num
+            if(before.isStr() && after.isNum()) {
+                if (before.toStr().length() <= after.toNum())
+                    return getNum(1);
+                return getNum(0);
             }
-            //Int, Str
-            if(before.isNum() && after.isString()){
-                if (((NumericalElement) after).get() <= ((StringElement) before).get().length())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+            //Num, Str
+            if(before.isNum() && after.isStr()){
+                if (before.toNum() <= after.toStr().length())
+                    return getNum(1);
+                return getNum(0);
             }
             return defaultBehaviour(new String[][]{ {"Num", "Num"}, {"Num", "Str"}, {"Str", "Num"}, {"Str", "Str"} });
         }
@@ -336,29 +341,29 @@ public class OperatorHandler {
         }
 
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
-            //Int
+            //Num
             if(before.isNum() && after.isNum()) {
-                if (((NumericalElement) before).get() >= ((NumericalElement) after).get())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+                if (before.toNum() >= after.toNum())
+                    return getNum(1);
+                return getNum(0);
             }
             //Str
-            if(before.isString() && after.isString()) {
-                if (((StringElement) before).get().length() >= ((StringElement) after).get().length())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+            if(before.isStr() && after.isStr()) {
+                if (before.toStr().length() >= after.toStr().length())
+                    return getNum(1);
+                return getNum(0);
             }
-            //Str, Int
-            if(before.isString() && after.isNum()) {
-                if (((StringElement) before).get().length() >= ((NumericalElement) after).get())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+            //Str, Num
+            if(before.isStr() && after.isNum()) {
+                if (before.toStr().length() >= after.toNum())
+                    return getNum(1);
+                return getNum(0);
             }
-            //Int, Str
-            if(before.isNum() && after.isString()){
-                if (((NumericalElement) after).get() >= ((StringElement) before).get().length())
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+            //Num, Str
+            if(before.isNum() && after.isStr()){
+                if (before.toNum() >= after.toStr().length())
+                    return getNum(1);
+                return getNum(0);
             }
             return defaultBehaviour(new String[][]{ {"Num", "Num"}, {"Num", "Str"}, {"Str", "Num"}, {"Str", "Str"} });
         }
@@ -373,11 +378,11 @@ public class OperatorHandler {
         }
 
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
-            //Int
+            //Num
             if(before.isNum() && after.isNum()) {
-                if (((NumericalElement) before).get()%2 == 1 && ((NumericalElement) after).get()%2 == 1)
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+                if (before.toNum()%2 == 1 && after.toNum()%2 == 1)
+                    return  getNum(1);
+                return getNum(0);
             }
             return defaultBehaviour((new String[][]{ {"Num","Num"} }));
         }
@@ -397,11 +402,11 @@ public class OperatorHandler {
             return false;
         }
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
-            //Int
+            //Num
             if(before.isNum() && after.isNum()) {
-                if (((NumericalElement) before).get()%2 == 1 || ((NumericalElement) after).get()%2 == 1)
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
+                if (before.toNum()%2 == 1 || after.toNum()%2 == 1)
+                    return getNum(1);
+                return getNum(0);
             }
             return defaultBehaviour((new String[][]{ {"Num","Num"} }));
         }
@@ -430,8 +435,8 @@ public class OperatorHandler {
         }
 
         public Element apply(Element before, Element after) throws RuntimeException, UnexpectedDataTypeException{
-            if(before.isArray() && after.isNum())
-                return ((ArrayElement) before).getElement(((NumericalElement) after).get());
+            if(before.isArr() && after.isNum())
+                return before.toArr()[after.toNum()];
             return defaultBehaviour((new String[][]{ {"Arr","Num"} }));
         }
         @Override

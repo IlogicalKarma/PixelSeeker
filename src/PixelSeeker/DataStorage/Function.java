@@ -1,13 +1,5 @@
 package PixelSeeker.DataStorage;
 
-import PixelSeeker.DataStorage.ArrayElement;
-import PixelSeeker.DataStorage.Element;
-import PixelSeeker.DataStorage.NameManagement;
-import PixelSeeker.exceptions.IncorrectParametersException;
-import PixelSeeker.exceptions.NamingException;
-import PixelSeeker.exceptions.RuntimeErrorException;
-import PixelSeeker.instructions.InstructionSet;
-
 
 /*public class Function extends Element{
     private ArrayElement param;

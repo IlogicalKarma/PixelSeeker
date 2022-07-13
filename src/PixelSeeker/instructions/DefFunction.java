@@ -14,11 +14,8 @@ public class DefFunction extends Instruction{
     final static String identifier = "def";
     static String type = "DefFunction";
     private String name;
-    public DefFunction(String name, Expression param, InstructionSet instructionSet, NameManagement context) throws InstructionSyntaxException {
-        super(param, 1, instructionSet, true, context);
-        this.instructionSet = instructionSet;
-        this.paramExpression = param;
-        this.name = name;
+    public DefFunction(Expression paramExpression, InstructionSet instructionSet, NameManagement context) throws InstructionSyntaxException {
+        super(paramExpression, 1, instructionSet, true, context);
     }
 
     @Override

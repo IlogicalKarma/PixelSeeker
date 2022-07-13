@@ -1,14 +1,11 @@
 package PixelSeeker.DataStorage;
 
-import PixelSeeker.exceptions.ExpressionExtractionFailureException;
-import PixelSeeker.exceptions.NamingException;
-
-import java.util.ArrayList;
+import PixelSeeker.exceptions.NamingErrorException;
 
 public class NumericalElement extends Element{
     private static int type = 1;
 
-    public NumericalElement(String name, Integer value, NameManagement context) throws NamingException {
+    public NumericalElement(String name, Integer value, NameManagement context) throws NamingErrorException {
         super(name, type, context);
         set(value);
         super.initialized = true;

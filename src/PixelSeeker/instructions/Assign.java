@@ -12,14 +12,14 @@ import javax.naming.Name;
 public class Assign extends Instruction{
     static String type = "Assign";
     final static String identifier = "assign";
-    public Assign(Expression param, NameManagement context) throws InstructionSyntaxException {
-        super(param,2, null, false,context);
+    public Assign(Expression paramExpression, NameManagement context) throws InstructionSyntaxException {
+        super(paramExpression,2, null, false,context);
     }
     public Element execute() throws ExpressionExtractionFailureException, IncorrectParametersException  {
         extract();
-        if(param.getElement(0).isNamed())
+        if(param.get(0).isNamed())
             throw new IncorrectParametersException("Supplied incorrect type of expression(first parameter). Required: Var");
-        param.getElement(0).name(param.getElement(1).getName());
+        param.get(0).name(param.get(1).getName());
         return null;
     }
 }

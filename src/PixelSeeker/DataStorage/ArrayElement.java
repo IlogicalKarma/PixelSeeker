@@ -1,15 +1,13 @@
 package PixelSeeker.DataStorage;
 
-import PixelSeeker.exceptions.ExpressionExtractionFailureException;
-import PixelSeeker.exceptions.NamingException;
-import PixelSeeker.expressions.Expression;
+import PixelSeeker.exceptions.NamingErrorException;
 
 import java.util.ArrayList;
 
 public class ArrayElement extends Element{
-    private static int type = 3;
+    private final static byte type = 3;
 
-    public ArrayElement(String name, ArrayList<Element> elements, NameManagement context) throws NamingException {
+    public ArrayElement(String name, ArrayList<Element> elements, NameManagement context) throws NamingErrorException {
         super(name, type, context);
         set(elements);
         super.initialized = true;
@@ -18,7 +16,7 @@ public class ArrayElement extends Element{
         super(type, context);
         set(elements);
     }
-    public ArrayElement(String name, NameManagement context) throws NamingException{
+    public ArrayElement(String name, NameManagement context) throws NamingErrorException {
         this(name, new ArrayList<Element>(), context);
     }
     public ArrayElement(ArrayList<Element> elements){

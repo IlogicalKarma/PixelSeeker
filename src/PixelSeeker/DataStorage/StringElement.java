@@ -1,12 +1,11 @@
 package PixelSeeker.DataStorage;
 
-import PixelSeeker.exceptions.NamingException;
-import sun.rmi.runtime.NewThreadAction;
+import PixelSeeker.exceptions.NamingErrorException;
 
 public class StringElement extends Element{
     private static int type = 2;
 
-    public StringElement(String name, String value, NameManagement context) throws NamingException{
+    public StringElement(String name, String value, NameManagement context) throws NamingErrorException {
         super(name, type, context);
         set(value);
         super.initialized = true;

@@ -2,7 +2,7 @@ package PixelSeeker.expressions;
 
 import PixelSeeker.DataStorage.*;
 import PixelSeeker.exceptions.ExpressionExtractionFailureException;
-import PixelSeeker.exceptions.NamingException;
+import PixelSeeker.exceptions.NamingErrorException;
 import PixelSeeker.exceptions.UnexpectedDataTypeException;
 
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ public class Expression extends Element{
                     elem = !elem;
                     try {
                         listsOfElements.get(index).add(value(valueString));
-                    }catch (NamingException e){
+                    }catch (NamingErrorException e){
                         throw new ExpressionExtractionFailureException(e);
                     }
                     valueString = new String();
@@ -93,7 +93,7 @@ public class Expression extends Element{
                             try {
                                 listsOfElements.get(index++).add(value(valueString));
                                 listsOfElements.add(new ArrayList<Element>());
-                            }catch (NamingException e){
+                            }catch (NamingErrorException e){
                                 throw new ExpressionExtractionFailureException(e);
                             }
                             valueString = new String();
@@ -118,36 +118,37 @@ public class Expression extends Element{
         }
         try {
             listsOfElements.get(index).add(value(valueString));
-        }catch (NamingException e){
+        }catch (NamingErrorException e){
             throw new ExpressionExtractionFailureException(e.getMessage(),e);
         }
         if(!elem)
             throw new ExpressionExtractionFailureException("Expected value in expression");
     }
 
-    public ArrayElement extract() throws ExpressionExtractionFailureException{
-        ArrayElement extracted = new ArrayElement();
+    public Element extract() throws ExpressionExtractionFailureException{
+        ArrayList<Element> extracted = new ArrayList<Element>();
+        Element extractedElement;
         for(ArrayList<Element> elements : listsOfElements) {
-            int i = 1, j = 0, k = 0, sizeElements = elements.size();
+            int i = 1, j = 0, k = 0, sizeElements = elements.size(), sizeOperators = operators.size();
             Element v = elements.get(0), v1;
             if (v.isExpr()){
                 v = ((Expression) v).extract();
 
             }
-            if(v.isArray() && ((ArrayElement) v).getLength() == 1)
+            if(v.isArr() && ((ArrayElement) v).getLength() == 1)
                 ((ArrayElement) v).getElement(0).copyTo(v);
             if (2 > sizeElements && v.isNamed()) {
-                extracted.get().add(v);
+                extracted.add(v);
                 continue;
             }
             i = 1;
-            while (i < sizeElements && j < operators.size()) {
+            while (i < sizeElements && j < sizeOperators) {
                 try {
                     v1 = elements.get(1);
                     if (v1.isExpr()){
                         v1 = ((Expression) v1).extract();
                     }
-                    if(v.isArray() && ((ArrayElement) v1).getLength() == 1)
+                    if(v.isArr() && ((ArrayElement) v1).getLength() == 1)
                         ((ArrayElement) v1).getElement(0).copyTo(v1);
                     v = operators.get(j).apply(v, v1);
                 } catch (UnexpectedDataTypeException e) {
@@ -156,10 +157,11 @@ public class Expression extends Element{
                 i++;
                 j++;
             }
-            extracted.get().add(v);
+            extracted.add(v);
         }
-        set(extracted);
-        return extracted;
+        extractedElement = new Element(ARR, extracted);
+        set(extractedElement);
+        return extractedElement;
     }
 
     @Override
@@ -167,30 +169,30 @@ public class Expression extends Element{
         return (Element) super.value;
     }
 
-    private Element value(String string) throws ExpressionExtractionFailureException, NamingException {
+    private Element value(String string) throws ExpressionExtractionFailureException, NamingErrorException {
         if (string == null)
             throw new ExpressionExtractionFailureException("Null value");
         string = string.trim().toLowerCase(Locale.ROOT);
         Integer r;
         if (string.startsWith("\"") && string.endsWith("\"")) {
-            return new StringElement(string.substring(1, string.length() - 1), context);
+            return getStr(string.substring(1, string.length() - 1));
         }
         if (string.startsWith("(") && string.endsWith(")")) {
-            return new Expression(string.substring(1, string.length() - 1), context);
+            return getStr(string.substring(1, string.length() - 1));
         }
         if (context.has(string))
             return context.get(string);
 
         try {
             r = Integer.parseInt(string);
-            return new NumericalElement(r, context);
+            return getNum(r);
         } catch (NumberFormatException e) {
         }
         if (context.has(string))
             return context.get(string);
             //
         else {
-            return new NumericalElement(string, 0, context);
+            return new Element(string, NUM, 0, context);
         }
     }
 
