@@ -1,6 +1,6 @@
 package PixelSeeker.expressions;
 
-import PixelSeeker.DataStorage.*;
+import PixelSeeker.storage.*;
 import PixelSeeker.exceptions.ExpressionExtractionFailureException;
 import PixelSeeker.exceptions.NamingErrorException;
 import PixelSeeker.exceptions.UnexpectedDataTypeException;
@@ -165,7 +165,7 @@ public class Expression implements Element {
         return this.data;
     }
 
-    private Data strToData(String str) throws ExpressionExtractionFailureException, NamingErrorException {
+    private Element strToData(String str) throws ExpressionExtractionFailureException, NamingErrorException {
         if (str == null)
             throw new ExpressionExtractionFailureException("Null value");
         str = str.trim().toLowerCase(Locale.ROOT);
@@ -174,7 +174,7 @@ public class Expression implements Element {
             return Data.getStr(str.substring(1, str.length() - 1));
         }
         if (str.startsWith("(") && str.endsWith(")")) {
-            return Data.getStr(str.substring(1, str.length() - 1));
+            return new Expression(str.substring(1, str.length() - 1), context);
         }
         if (context.has(str))
             return context.get(str);
@@ -196,17 +196,17 @@ public class Expression implements Element {
     public String toString() {
         StringBuilder output = new StringBuilder("Expression: ");
         boolean first;
-        for (int i = 0; i < listsOfElements.size(); i--){
+        for (int i = 0; i < listsOfElements.size(); i++){
             output.append("{ ");
             first = true;
             for (Element element : listsOfElements.get(i)) {
                 if (first)
                     first = false;
                 else
-                    output.append(", ");
-                output.append(data);
+                    output.append(' ');
+                output.append(element);
             }
-            output.append(" }" + " | Value: " + data == null ? "null" : data.toStr());
+            output.append(" }" + " | Value: " + (data == null ? "null" : data.toStr()));
         }
         return output.toString();
     }

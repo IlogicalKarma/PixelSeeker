@@ -1,4 +1,4 @@
-package PixelSeeker.DataStorage;
+package PixelSeeker.storage;
 
 import java.util.HashMap;
 

@@ -1,8 +1,7 @@
 package PixelSeeker.instructions;
 
-import PixelSeeker.DataStorage.Data;
-import PixelSeeker.DataStorage.Context;
-import PixelSeeker.DataStorage.NumericalElement;
+import PixelSeeker.storage.Data;
+import PixelSeeker.storage.Context;
 import PixelSeeker.exceptions.ExpressionExtractionFailureException;
 import PixelSeeker.exceptions.IncorrectParametersException;
 import PixelSeeker.exceptions.InstructionSyntaxException;
@@ -20,7 +19,7 @@ public class If extends Instruction{
     public Data execute() throws PixelSeeker.exceptions.InvalidVariableNameException, ExpressionExtractionFailureException, IncorrectParametersException, RuntimeErrorException {
         extract();
         Data r;
-        if(param.get(0).toBool()) {
+        if(paramData.toBool()) {
             r = instructionSet.execute();
             if(r != null)
                 return r;

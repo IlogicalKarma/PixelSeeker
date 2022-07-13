@@ -1,7 +1,7 @@
 package PixelSeeker.instructions;
 
-import PixelSeeker.DataStorage.Data;
-import PixelSeeker.DataStorage.Context;
+import PixelSeeker.storage.Data;
+import PixelSeeker.storage.Context;
 import PixelSeeker.exceptions.ExpressionExtractionFailureException;
 import PixelSeeker.exceptions.IncorrectParametersException;
 import PixelSeeker.exceptions.InstructionSyntaxException;
@@ -18,15 +18,13 @@ public class While extends Instruction{
     @Override
     public Data execute() throws PixelSeeker.exceptions.InvalidVariableNameException, ExpressionExtractionFailureException, IncorrectParametersException, RuntimeErrorException {
         Data r, p;
-        do{
-            extract();
-            p = param.get(0);
-            if(!p.isNum())
-                throw new IncorrectParametersException("Supplied incorrect type of expression. Required: Num");
+        extract();
+        while (paramData.toBool()){
             r = instructionSet.execute();
             if(r != null)
                 return r;
-        }while (p.toBool());
+            extract();
+        }
         return null;
     }
 }

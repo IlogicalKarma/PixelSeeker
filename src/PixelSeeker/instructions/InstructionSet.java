@@ -1,6 +1,6 @@
 package PixelSeeker.instructions;
 
-import PixelSeeker.DataStorage.Data;
+import PixelSeeker.storage.Data;
 import PixelSeeker.exceptions.RuntimeErrorException;
 
 import java.util.ArrayList;

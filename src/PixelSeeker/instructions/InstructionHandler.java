@@ -1,6 +1,6 @@
 package PixelSeeker.instructions;
 
-import PixelSeeker.DataStorage.Context;
+import PixelSeeker.storage.Context;
 import PixelSeeker.exceptions.InstructionSyntaxException;
 import PixelSeeker.expressions.Expression;
 
@@ -24,7 +24,7 @@ public class InstructionHandler{
                 return null;
         }
     }
-    public static boolean canRetrieve(String string){
+    public static Boolean preRetrieve(String string){
         switch (string.toLowerCase()){
             case If.identifier:
                 return true;
@@ -37,7 +37,7 @@ public class InstructionHandler{
             case Assign.identifier:
                 return true;
             default:
-                return false;
+                return null;
         }
     }
 }

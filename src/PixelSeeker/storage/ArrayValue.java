@@ -1,4 +1,4 @@
-package PixelSeeker.DataStorage;
+package PixelSeeker.storage;
 
 public class ArrayValue extends Value {
     private static byte typeCode = 3;
@@ -17,7 +17,7 @@ public class ArrayValue extends Value {
         return array[index];
     }
     public void add(Data val){
-        Data[] array = new Data[this.array.length];
+        Data[] array = new Data[this.array.length+1];
         for(int i = 0; i < this.array.length; i++)
             array[i] = this.array[i];
         array[this.array.length] = val;
@@ -36,8 +36,7 @@ public class ArrayValue extends Value {
                 return false;
         return true;
     }
-    @Override
-    public String toString(){
+    private String toStrings(boolean forUser){
         boolean first = true;
         StringBuilder sb = new StringBuilder("{ ");
         for(Data data: array) {
@@ -45,8 +44,17 @@ public class ArrayValue extends Value {
                 first = false;
             else
                 sb.append(", ");
-            sb.append(data == null ? "null" : data.toString());
+            sb.append(data == null ? "null" : (forUser ? data.toUserString() : data.toString()));
         }
         return sb.append(" }").toString();
+    }
+    @Override
+    public String toString(){
+        return toStrings(false);
+    }
+
+    @Override
+    public String toUserString() {
+        return toStrings(true);
     }
 }

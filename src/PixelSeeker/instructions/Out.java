@@ -1,7 +1,7 @@
 package PixelSeeker.instructions;
 
-import PixelSeeker.DataStorage.Data;
-import PixelSeeker.DataStorage.Context;
+import PixelSeeker.storage.Data;
+import PixelSeeker.storage.Context;
 import PixelSeeker.exceptions.ExpressionExtractionFailureException;
 import PixelSeeker.exceptions.IncorrectParametersException;
 import PixelSeeker.exceptions.InstructionSyntaxException;
@@ -16,11 +16,11 @@ public class Out extends Instruction{
     @Override
     public Data execute() throws ExpressionExtractionFailureException, IncorrectParametersException {
         extract();
-        if(param.size() == 0) {
+        if(param.length == 0) {
             System.out.println("\n");
             return null;
         }
-        System.out.print(param.toString());
+        System.out.print(paramData.toUserString());
         return null;
     }
 }

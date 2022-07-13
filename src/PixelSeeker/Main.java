@@ -1,6 +1,6 @@
 package PixelSeeker;
 
-import PixelSeeker.DataStorage.Context;
+import PixelSeeker.storage.Context;
 import PixelSeeker.exceptions.*;
 import PixelSeeker.expressions.Expression;
 import PixelSeeker.instructions.*;
@@ -31,7 +31,7 @@ public class Main {
                 return instructionSet;
             splitter = input.get(ln).indexOf(' ');
             firstArgument = splitter != -1 ? input.get(ln).substring(level.length(), input.get(ln).indexOf(' ')).trim() : null;
-            if(firstArgument != null && InstructionHandler.canRetrieve(firstArgument)) {
+            if(firstArgument != null && InstructionHandler.preRetrieve(firstArgument)) {
                 expression = new Expression(input.get(ln).substring(input.get(ln).indexOf(' ')), context);
                 ln++;
                 InstructionSet codeBlock = read(level + "\t", context);

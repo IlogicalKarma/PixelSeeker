@@ -1,8 +1,7 @@
 package PixelSeeker.instructions;
 
-import PixelSeeker.DataStorage.Data;
-import PixelSeeker.DataStorage.Context;
-import PixelSeeker.DataStorage.NumericalElement;
+import PixelSeeker.storage.Data;
+import PixelSeeker.storage.Context;
 import PixelSeeker.exceptions.ExpressionExtractionFailureException;
 import PixelSeeker.exceptions.IncorrectParametersException;
 import PixelSeeker.exceptions.InstructionSyntaxException;
@@ -28,11 +27,11 @@ public class KeyPress extends Instruction {
     }
     public Data execute() throws ExpressionExtractionFailureException, IncorrectParametersException {
         extract();
-        if(!param.get(0).isNum() || !param.get(1).isNum())
+        if(!param[0].isNum() || !param[1].isNum())
             throw new IncorrectParametersException("Supplied incorrect type of expression. Required: Num");
-        robot.keyPress(param.get(0).toNum());
-        try{ Thread.sleep(param.get(1).toNum()); } catch (java.lang.InterruptedException e) { e.printStackTrace(); System.out.println(e.toString()); }
-        robot.keyRelease(param.get(0).toNum());
+        robot.keyPress(param[0].toNum());
+        try{ Thread.sleep(param[1].toNum()); } catch (java.lang.InterruptedException e) { e.printStackTrace(); System.out.println(e.toString()); }
+        robot.keyRelease(param[0].toNum());
         return null;
     }
 }

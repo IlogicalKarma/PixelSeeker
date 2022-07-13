@@ -1,4 +1,4 @@
-package PixelSeeker.DataStorage;
+package PixelSeeker.storage;
 
 import PixelSeeker.exceptions.NamingErrorException;
 import PixelSeeker.expressions.OperatorHandler;
@@ -119,5 +119,8 @@ public class Data implements Element{
     @Override
     public String toString() {
         return value.toString();
+    }
+    public String toUserString(){
+        return value.toUserString();
     }
 }

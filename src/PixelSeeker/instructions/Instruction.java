@@ -1,21 +1,24 @@
 package PixelSeeker.instructions;
 
-import PixelSeeker.DataStorage.Data;
-import PixelSeeker.DataStorage.Context;
-import PixelSeeker.exceptions.*;
+import PixelSeeker.storage.Data;
+import PixelSeeker.storage.Context;
+import PixelSeeker.exceptions.ExpressionExtractionFailureException;
+import PixelSeeker.exceptions.IncorrectParametersException;
+import PixelSeeker.exceptions.InstructionSyntaxException;
+import PixelSeeker.exceptions.InvalidVariableNameException;
+import PixelSeeker.exceptions.RuntimeErrorException;
 import PixelSeeker.expressions.Expression;
-
-import java.util.ArrayList;
 
 public abstract class Instruction{
     protected Expression paramExpression;
-    protected ArrayList<Data> param;
-    protected Data paramElem;
+    protected Data[] param;
+    protected Data paramData;
     protected InstructionSet instructionSet;
-    protected static String type;
-    protected static String identifier;
     protected int paramNr = 0;
     protected Context context;
+    protected static String type;
+    protected static String identifier;
+    protected static boolean rInstructionSet;
     public Instruction(Expression paramExpression, int paramNr, InstructionSet instructionSet, boolean requiresInstructionSet, Context context) throws InstructionSyntaxException {
         this.context = new Context(context);
         this.paramExpression = paramExpression;
@@ -27,10 +30,10 @@ public abstract class Instruction{
         this.instructionSet = instructionSet;
     }
     protected void extract() throws IncorrectParametersException, ExpressionExtractionFailureException {
-        this.paramElem = paramExpression.extract();
-        this.param = ((ArrayList<Data>)paramElem.get());
-        if(param.size() < paramNr)
-            throw new IncorrectParametersException("Insufficient number of parameters supplied: Expected " + paramNr + ", Supplied " + param.size());
+        this.paramData = paramExpression.extract();
+        this.param = paramData.toArr();
+        if(param.length < paramNr)
+            throw new IncorrectParametersException("Insufficient number of parameters supplied: Expected " + paramNr + ", Supplied " + param.length);
     }
     public abstract Data execute() throws ExpressionExtractionFailureException, InvalidVariableNameException, IncorrectParametersException, RuntimeErrorException;
 }

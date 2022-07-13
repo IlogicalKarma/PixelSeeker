@@ -1,4 +1,4 @@
-package PixelSeeker.DataStorage;
+package PixelSeeker.storage;
 
 public class NumericalValue extends Value {
     private final static byte typeCode = 1;
@@ -20,5 +20,10 @@ public class NumericalValue extends Value {
     @Override
     public String toString() {
         return Integer.toString(value);
+    }
+
+    @Override
+    public String toUserString() {
+        return toString();
     }
 }

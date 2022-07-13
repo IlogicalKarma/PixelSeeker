@@ -1,7 +1,7 @@
 package PixelSeeker.instructions;
 
-import PixelSeeker.DataStorage.Data;
-import PixelSeeker.DataStorage.Context;
+import PixelSeeker.storage.Data;
+import PixelSeeker.storage.Context;
 import PixelSeeker.exceptions.ExpressionExtractionFailureException;
 import PixelSeeker.exceptions.IncorrectParametersException;
 import PixelSeeker.exceptions.InstructionSyntaxException;
@@ -18,6 +18,6 @@ public class Return extends Instruction{
     @Override
     public Data execute() throws ExpressionExtractionFailureException, InvalidVariableNameException, IncorrectParametersException {
         extract();
-        return paramElem;
+        return paramData;
     }
 }

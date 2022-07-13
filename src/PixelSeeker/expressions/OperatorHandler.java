@@ -1,13 +1,11 @@
 package PixelSeeker.expressions;
 
-import PixelSeeker.DataStorage.Data;
-import PixelSeeker.DataStorage.Element;
+import PixelSeeker.storage.Data;
+import PixelSeeker.storage.Element;
 import PixelSeeker.exceptions.UnexpectedDataTypeException;
 
-import java.util.Arrays;
-
-import static PixelSeeker.DataStorage.Data.getNum;
-import static PixelSeeker.DataStorage.Data.getStr;
+import static PixelSeeker.storage.Data.getNum;
+import static PixelSeeker.storage.Data.getStr;
 
 public class OperatorHandler {
     private OperatorHandler(){}

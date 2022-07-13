@@ -1,7 +1,7 @@
 package PixelSeeker.instructions;
 
-import PixelSeeker.DataStorage.Data;
-import PixelSeeker.DataStorage.Context;
+import PixelSeeker.storage.Data;
+import PixelSeeker.storage.Context;
 import PixelSeeker.exceptions.ExpressionExtractionFailureException;
 import PixelSeeker.exceptions.IncorrectParametersException;
 import PixelSeeker.exceptions.InstructionSyntaxException;
@@ -15,9 +15,9 @@ public class Assign extends Instruction{
     }
     public Data execute() throws ExpressionExtractionFailureException, IncorrectParametersException  {
         extract();
-        if(param.get(0).isNamed())
+        if(param[0].isNamed())
             throw new IncorrectParametersException("Supplied incorrect type of expression(first parameter). Required: Var");
-        param.get(0).name(param.get(1).getName());
+        param[0].name(param[1].getName());
         return null;
     }
 }

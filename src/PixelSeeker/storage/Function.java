@@ -1,4 +1,4 @@
-package PixelSeeker.DataStorage;
+package PixelSeeker.storage;
 
 
 /*public class Function extends Element{

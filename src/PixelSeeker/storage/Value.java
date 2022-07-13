@@ -1,4 +1,4 @@
-package PixelSeeker.DataStorage;
+package PixelSeeker.storage;
 
 public abstract class Value {
     private byte typeCode;
@@ -12,4 +12,6 @@ public abstract class Value {
         return new Data(this);
     }
     public abstract boolean toBool();
+    public abstract String toString();
+    public abstract String toUserString();
 }

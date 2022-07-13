@@ -1,4 +1,4 @@
-package PixelSeeker.DataStorage;
+package PixelSeeker.storage;
 
 public class StringValue extends Value {
     private final static byte typeCode = 2;
@@ -16,6 +16,11 @@ public class StringValue extends Value {
     }
     @Override
     public String toString() {
+        return '"' + string + '"';
+    }
+
+    @Override
+    public String toUserString() {
         return string;
     }
 }
