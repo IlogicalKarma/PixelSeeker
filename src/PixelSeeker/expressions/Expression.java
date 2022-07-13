@@ -8,25 +8,20 @@ import PixelSeeker.exceptions.UnexpectedDataTypeException;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class Expression extends Element{
-
-    private static char[] nameBlacklist = new char[]{'(',')','[',']',};
-    private NameManagement context;
-    private String type;
+public class Expression implements Element {
+    private Context context;
     private String raw;
-    private String string = "";
+    private Data data;
     private ArrayList<ArrayList<Element>> listsOfElements  = new ArrayList<>();
-    private ArrayList<OperatorHandler.Operator> operators = new ArrayList<>();
-    public Expression(String raw, NameManagement context) throws ExpressionExtractionFailureException{
-        super(5, context);
+    public Expression(String raw, Context context) throws ExpressionExtractionFailureException{
         int index = 0;
-        listsOfElements.add(new ArrayList<Element>());
+        listsOfElements.add(new ArrayList<>());
         this.context = context;
         raw = raw.trim();
         this.raw = raw;
         //System.out.println(raw);   //here
         if(raw.isEmpty())
-            throw new ExpressionExtractionFailureException("Empty expression");
+            return;
         String valueString = new String();
         String op = new String();
         int i = 0, nests, nestIndex;
@@ -40,7 +35,7 @@ public class Expression extends Element{
                     i--;
                     elem = !elem;
                     try {
-                        listsOfElements.get(index).add(value(valueString));
+                        listsOfElements.get(index).add(strToData(valueString));
                     }catch (NamingErrorException e){
                         throw new ExpressionExtractionFailureException(e);
                     }
@@ -53,6 +48,7 @@ public class Expression extends Element{
                             boolean end = false;
                             valueString += current;
                             while(i < raw.length() && !end){
+                                // Special chars
                                 switch (raw.charAt(i)) {
                                     case '\\':
                                         // Chars affected by escape char
@@ -91,8 +87,8 @@ public class Expression extends Element{
                             throw new ExpressionExtractionFailureException("Incorrect expression brackets placement");
                         case ',':
                             try {
-                                listsOfElements.get(index++).add(value(valueString));
-                                listsOfElements.add(new ArrayList<Element>());
+                                listsOfElements.get(index++).add(strToData(valueString));
+                                listsOfElements.add(new ArrayList<>());
                             }catch (NamingErrorException e){
                                 throw new ExpressionExtractionFailureException(e);
                             }
@@ -112,12 +108,12 @@ public class Expression extends Element{
                     if (operator == null)
                         throw new ExpressionExtractionFailureException("Invalid operator: " + op);
                     op = new String();
-                    operators.add(operator);
+                    listsOfElements.get(index).add(operator);
                 }
             }
         }
         try {
-            listsOfElements.get(index).add(value(valueString));
+            listsOfElements.get(index).add(strToData(valueString));
         }catch (NamingErrorException e){
             throw new ExpressionExtractionFailureException(e.getMessage(),e);
         }
@@ -125,74 +121,74 @@ public class Expression extends Element{
             throw new ExpressionExtractionFailureException("Expected value in expression");
     }
 
-    public Element extract() throws ExpressionExtractionFailureException{
-        ArrayList<Element> extracted = new ArrayList<Element>();
-        Element extractedElement;
+    public Data extract() throws ExpressionExtractionFailureException{
+        ArrayValue extracted = new ArrayValue();
+        Data var1, var2;
+        OperatorHandler.Operator operator;
+        Element aux;
         for(ArrayList<Element> elements : listsOfElements) {
-            int i = 1, j = 0, k = 0, sizeElements = elements.size(), sizeOperators = operators.size();
-            Element v = elements.get(0), v1;
-            if (v.isExpr()){
-                v = ((Expression) v).extract();
-
-            }
-            if(v.isArr() && ((ArrayElement) v).getLength() == 1)
-                ((ArrayElement) v).getElement(0).copyTo(v);
-            if (2 > sizeElements && v.isNamed()) {
-                extracted.add(v);
+            int i = 1, j = 0, k = 0, sizeElements = elements.size();
+            aux = elements.get(0);
+            if (aux instanceof Expression)
+                var1 = ((Expression) aux).extract();
+            else
+                var1 = (Data) aux;
+            if(var1.isArr() && var1.toArr().length == 1)
+                var1.toArr()[0].copyTo(var1);
+            if (sizeElements == 1 && var1.isNamed()) {
+                extracted.add(var1);
                 continue;
             }
             i = 1;
-            while (i < sizeElements && j < sizeOperators) {
+            while (i < sizeElements) {
                 try {
-                    v1 = elements.get(1);
-                    if (v1.isExpr()){
-                        v1 = ((Expression) v1).extract();
-                    }
-                    if(v.isArr() && ((ArrayElement) v1).getLength() == 1)
-                        ((ArrayElement) v1).getElement(0).copyTo(v1);
-                    v = operators.get(j).apply(v, v1);
+                    operator = (OperatorHandler.Operator) elements.get(i++);
+                    aux = elements.get(i++);
+                    if (aux instanceof Expression)
+                        var2 = ((Expression) aux).extract();
+                    else
+                        var2 = (Data) aux;
+                    if(var2.isArr() && var2.toArr().length == 1)
+                        var2.toArr()[0].copyTo(var2);
+                    var1 = operator.apply(var1, var2);
                 } catch (UnexpectedDataTypeException e) {
                     throw new ExpressionExtractionFailureException("Failed to apply operator", e);
                 }
-                i++;
-                j++;
             }
-            extracted.add(v);
+            extracted.add(var1);
         }
-        extractedElement = new Element(ARR, extracted);
-        set(extractedElement);
-        return extractedElement;
+        this.data = new Data(extracted);
+        return this.data;
     }
 
-    @Override
-    public Element get() throws ExpressionExtractionFailureException{
-        return (Element) super.value;
+    public Data get() throws ExpressionExtractionFailureException{
+        return this.data;
     }
 
-    private Element value(String string) throws ExpressionExtractionFailureException, NamingErrorException {
-        if (string == null)
+    private Data strToData(String str) throws ExpressionExtractionFailureException, NamingErrorException {
+        if (str == null)
             throw new ExpressionExtractionFailureException("Null value");
-        string = string.trim().toLowerCase(Locale.ROOT);
+        str = str.trim().toLowerCase(Locale.ROOT);
         Integer r;
-        if (string.startsWith("\"") && string.endsWith("\"")) {
-            return getStr(string.substring(1, string.length() - 1));
+        if (str.startsWith("\"") && str.endsWith("\"")) {
+            return Data.getStr(str.substring(1, str.length() - 1));
         }
-        if (string.startsWith("(") && string.endsWith(")")) {
-            return getStr(string.substring(1, string.length() - 1));
+        if (str.startsWith("(") && str.endsWith(")")) {
+            return Data.getStr(str.substring(1, str.length() - 1));
         }
-        if (context.has(string))
-            return context.get(string);
+        if (context.has(str))
+            return context.get(str);
 
         try {
-            r = Integer.parseInt(string);
-            return getNum(r);
+            r = Integer.parseInt(str);
+            return Data.getNum(r);
         } catch (NumberFormatException e) {
         }
-        if (context.has(string))
-            return context.get(string);
+        if (context.has(str))
+            return context.get(str);
             //
         else {
-            return new Element(string, NUM, 0, context);
+            return new Data(str, new NumericalValue(), context);
         }
     }
 
@@ -208,9 +204,9 @@ public class Expression extends Element{
                     first = false;
                 else
                     output.append(", ");
-                output.append(element);
+                output.append(data);
             }
-            output.append(" }" + " | Value: " + ((ArrayElement)value).getElement(i) == null ? "null" : ((ArrayElement)value).getElement(i));
+            output.append(" }" + " | Value: " + data == null ? "null" : data.toStr());
         }
         return output.toString();
     }

@@ -1,14 +1,13 @@
 package PixelSeeker.expressions;
 
-import PixelSeeker.DataStorage.ArrayElement;
+import PixelSeeker.DataStorage.Data;
 import PixelSeeker.DataStorage.Element;
-import PixelSeeker.DataStorage.NumericalElement;
-import PixelSeeker.DataStorage.StringElement;
 import PixelSeeker.exceptions.UnexpectedDataTypeException;
 
-import static PixelSeeker.DataStorage.Element.getNum;
-import static PixelSeeker.DataStorage.Element.getStr;
-import static PixelSeeker.DataStorage.Element.getArr;
+import java.util.Arrays;
+
+import static PixelSeeker.DataStorage.Data.getNum;
+import static PixelSeeker.DataStorage.Data.getStr;
 
 public class OperatorHandler {
     private OperatorHandler(){}
@@ -45,7 +44,7 @@ public class OperatorHandler {
         return false;
     }
 
-    public static abstract class Operator{
+    public static abstract class Operator implements Element {
         protected String[] representations;
         public boolean verify(String string) {
             for (int i = 0; i < representations.length; i++)
@@ -53,8 +52,8 @@ public class OperatorHandler {
                     return true;
             return false;
         }
-        public abstract Element apply(Element before, Element after) throws UnexpectedDataTypeException, RuntimeException;
-        protected Element defaultBehaviour(String[][] types) throws UnexpectedDataTypeException{
+        public abstract Data apply(Data before, Data after) throws UnexpectedDataTypeException, RuntimeException;
+        protected Data defaultBehaviour(String[][] types) throws UnexpectedDataTypeException{
             StringBuilder errorMessage = new StringBuilder("Operator accepts these configurations: ");
             boolean first = true;
             for(int i = 0; i < types.length && types[i].length == 2; i++) {
@@ -71,13 +70,17 @@ public class OperatorHandler {
             throw new UnexpectedDataTypeException(errorMessage.toString());
         }
 
+        @Override
+        public String toString() {
+            return representations[0];
+        }
     }
     private static class Equals extends Operator{
         private Equals(){
             representations = new String[]{"=="};
         }
 
-        public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
+        public Data apply(Data before, Data after) throws UnexpectedDataTypeException{
             //Num
             if(before.isNum() && after.isNum()) {
                 if (before.toNum() == after.toNum())
@@ -99,7 +102,7 @@ public class OperatorHandler {
             representations = new String[]{"!="};
         }
 
-        public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
+        public Data apply(Data before, Data after) throws UnexpectedDataTypeException{
             //Num
             if(before.isNum() && after.isNum()) {
                 if (before.toNum() != after.toNum())
@@ -121,7 +124,7 @@ public class OperatorHandler {
             representations = new String[]{"/"};
         }
 
-        public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
+        public Data apply(Data before, Data after) throws UnexpectedDataTypeException{
             if(before.isNum() && after.isNum()) {
                 return getNum(before.toNum() / after.toNum());
             }
@@ -139,7 +142,7 @@ public class OperatorHandler {
             representations = new String[]{"*"};
         }
 
-        public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
+        public Data apply(Data before, Data after) throws UnexpectedDataTypeException{
             if(before.isNum() && after.isNum())
                 return getNum(before.toNum()* after.toNum());
             return defaultBehaviour((new String[][]{ {"Num","Num"} }));
@@ -155,7 +158,7 @@ public class OperatorHandler {
             representations = new String[]{"%"};
         }
 
-        public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
+        public Data apply(Data before, Data after) throws UnexpectedDataTypeException{
             if(before.isNum() && after.isNum())
                 return getNum(before.toNum()% after.toNum());
             return defaultBehaviour((new String[][]{ {"Num","Num"} }));
@@ -171,7 +174,7 @@ public class OperatorHandler {
             representations = new String[]{"+"};
         }
 
-        public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
+        public Data apply(Data before, Data after) throws UnexpectedDataTypeException{
             //Sum
             if(before.isNum() && after.isNum())
                 return getNum(before.toNum() + after.toNum());
@@ -202,7 +205,7 @@ public class OperatorHandler {
             representations = new String[]{"-"};
         }
 
-        public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
+        public Data apply(Data before, Data after) throws UnexpectedDataTypeException{
             //sub
             if(before.isNum() && after.isNum())
                 return getNum(before.toNum() - before.toNum());
@@ -229,7 +232,7 @@ public class OperatorHandler {
             representations = new String[]{"<"};
         }
 
-        public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
+        public Data apply(Data before, Data after) throws UnexpectedDataTypeException{
             //Num
             if(before.isNum() && after.isNum()) {
                 if (before.toNum() < after.toNum())
@@ -266,7 +269,7 @@ public class OperatorHandler {
             representations = new String[]{">"};
         }
 
-        public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
+        public Data apply(Data before, Data after) throws UnexpectedDataTypeException{
             //Num
             if(before.isNum() && after.isNum()) {
                 if (before.toNum() > after.toNum())
@@ -303,7 +306,7 @@ public class OperatorHandler {
             representations = new String[]{"<="};
         }
 
-        public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
+        public Data apply(Data before, Data after) throws UnexpectedDataTypeException{
             //Num
             if(before.isNum() && after.isNum()) {
                 if (before.toNum() <= after.toNum())
@@ -340,7 +343,7 @@ public class OperatorHandler {
             representations = new String[]{">="};
         }
 
-        public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
+        public Data apply(Data before, Data after) throws UnexpectedDataTypeException{
             //Num
             if(before.isNum() && after.isNum()) {
                 if (before.toNum() >= after.toNum())
@@ -377,7 +380,7 @@ public class OperatorHandler {
             representations = new String[]{"&&"};
         }
 
-        public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
+        public Data apply(Data before, Data after) throws UnexpectedDataTypeException{
             //Num
             if(before.isNum() && after.isNum()) {
                 if (before.toNum()%2 == 1 && after.toNum()%2 == 1)
@@ -401,7 +404,7 @@ public class OperatorHandler {
                     return true;
             return false;
         }
-        public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
+        public Data apply(Data before, Data after) throws UnexpectedDataTypeException{
             //Num
             if(before.isNum() && after.isNum()) {
                 if (before.toNum()%2 == 1 || after.toNum()%2 == 1)
@@ -420,7 +423,7 @@ public class OperatorHandler {
             representations = new String[]{"="};
         }
 
-        public Element apply(Element before, Element after){
+        public Data apply(Data before, Data after){
             after.copyTo(before);
             return before;
         }
@@ -434,7 +437,7 @@ public class OperatorHandler {
             representations = new String[]{"."};
         }
 
-        public Element apply(Element before, Element after) throws RuntimeException, UnexpectedDataTypeException{
+        public Data apply(Data before, Data after) throws RuntimeException, UnexpectedDataTypeException{
             if(before.isArr() && after.isNum())
                 return before.toArr()[after.toNum()];
             return defaultBehaviour((new String[][]{ {"Arr","Num"} }));

@@ -4,33 +4,33 @@ import PixelSeeker.exceptions.NamingErrorException;
 
 import java.util.ArrayList;
 
-public class ArrayElement extends Element{
+public class ArrayElement extends Data {
     private final static byte type = 3;
 
-    public ArrayElement(String name, ArrayList<Element> elements, NameManagement context) throws NamingErrorException {
+    public ArrayElement(String name, ArrayList<Data> dataList, Context context) throws NamingErrorException {
         super(name, type, context);
-        set(elements);
+        set(dataList);
         super.initialized = true;
     }
-    public ArrayElement(ArrayList<Element> elements, NameManagement context) {
+    public ArrayElement(ArrayList<Data> dataList, Context context) {
         super(type, context);
-        set(elements);
+        set(dataList);
     }
-    public ArrayElement(String name, NameManagement context) throws NamingErrorException {
-        this(name, new ArrayList<Element>(), context);
+    public ArrayElement(String name, Context context) throws NamingErrorException {
+        this(name, new ArrayList<Data>(), context);
     }
-    public ArrayElement(ArrayList<Element> elements){
-        super(type, elements);
+    public ArrayElement(ArrayList<Data> dataList){
+        super(type, dataList);
     }
     public ArrayElement(){
-        super(type, new ArrayList<Element>());
+        super(type, new ArrayList<Data>());
     }
-    public Element getElement(int i){
+    public Data getElement(int i){
         return get().get(i);
     }
     public boolean areNamed(){
-        for(Element element : get())
-            if(!element.isNamed())
+        for(Data data : get())
+            if(!data.isNamed())
                 return false;
         return true;
     }
@@ -40,14 +40,14 @@ public class ArrayElement extends Element{
     }
 
     @Override
-    public ArrayList<Element> get() {
-        return (ArrayList<Element>) value;
+    public ArrayList<Data> get() {
+        return (ArrayList<Data>) value;
     }
 
     public String toString() {
         boolean first = true;
         StringBuilder sb = new StringBuilder("{ ");
-        for(Element e: get()) {
+        for(Data e: get()) {
             if (first)
                 first = false;
             else

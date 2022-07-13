@@ -1,8 +1,6 @@
 package PixelSeeker.instructions;
 
-import PixelSeeker.DataStorage.NameManagement;
-import PixelSeeker.exceptions.ExpressionExtractionFailureException;
-import PixelSeeker.exceptions.IncorrectParametersException;
+import PixelSeeker.DataStorage.Context;
 import PixelSeeker.exceptions.InstructionSyntaxException;
 import PixelSeeker.expressions.Expression;
 
@@ -10,7 +8,7 @@ public class InstructionHandler{
     private InstructionHandler instructionHandler = new InstructionHandler();
     private InstructionHandler(){}
 
-    public static Instruction retrieve(String string, Expression paramExpression, InstructionSet instructionSet, NameManagement context) throws InstructionSyntaxException, java.awt.AWTException{
+    public static Instruction retrieve(String string, Expression paramExpression, InstructionSet instructionSet, Context context) throws InstructionSyntaxException, java.awt.AWTException{
         switch (string.toLowerCase()){
             case If.identifier:
                 return new If(paramExpression, instructionSet, context);

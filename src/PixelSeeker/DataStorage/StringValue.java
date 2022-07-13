@@ -14,4 +14,8 @@ public class StringValue extends Value {
     public boolean toBool(){
         return !(string.isEmpty());
     }
+    @Override
+    public String toString() {
+        return string;
+    }
 }

@@ -2,15 +2,15 @@ package PixelSeeker.DataStorage;
 
 import PixelSeeker.exceptions.NamingErrorException;
 
-public class NumericalElement extends Element{
+public class NumericalElement extends Data {
     private static int type = 1;
 
-    public NumericalElement(String name, Integer value, NameManagement context) throws NamingErrorException {
+    public NumericalElement(String name, Integer value, Context context) throws NamingErrorException {
         super(name, type, context);
         set(value);
         super.initialized = true;
     }
-    public NumericalElement(Integer value, NameManagement context) {
+    public NumericalElement(Integer value, Context context) {
         super(type, context);
         set(value);
     }

@@ -2,19 +2,19 @@ package PixelSeeker.DataStorage;
 
 import PixelSeeker.exceptions.NamingErrorException;
 
-public class StringElement extends Element{
+public class StringElement extends Data {
     private static int type = 2;
 
-    public StringElement(String name, String value, NameManagement context) throws NamingErrorException {
+    public StringElement(String name, String value, Context context) throws NamingErrorException {
         super(name, type, context);
         set(value);
         super.initialized = true;
     }
-    public StringElement(String value, NameManagement context){
+    public StringElement(String value, Context context){
         super(type, context);
         set(value);
     }
-    public StringElement(NameManagement context){
+    public StringElement(Context context){
         super(type, context);
         set(new String());
     }

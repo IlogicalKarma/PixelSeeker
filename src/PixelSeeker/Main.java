@@ -1,6 +1,6 @@
 package PixelSeeker;
 
-import PixelSeeker.DataStorage.NameManagement;
+import PixelSeeker.DataStorage.Context;
 import PixelSeeker.exceptions.*;
 import PixelSeeker.expressions.Expression;
 import PixelSeeker.instructions.*;
@@ -16,7 +16,7 @@ public class Main {
     static String commentIdentifier = "//";
     static InstructionSet main = new InstructionSet();
 
-    static InstructionSet read(String level, NameManagement context) throws ExpressionExtractionFailureException, java.awt.AWTException, IncorrectParametersException, InstructionSyntaxException {
+    static InstructionSet read(String level, Context context) throws ExpressionExtractionFailureException, java.awt.AWTException, IncorrectParametersException, InstructionSyntaxException {
         Expression expression;
         Instruction instruction;
         InstructionSet instructionSet = new InstructionSet();
@@ -62,7 +62,7 @@ public class Main {
             e.printStackTrace();
         }
         try {
-            main = read("", new NameManagement());
+            main = read("", new Context());
 
         }catch (Exception e){
             System.out.println("Error on line " + (ln+1));

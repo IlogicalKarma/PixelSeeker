@@ -1,25 +1,23 @@
 package PixelSeeker.DataStorage;
 
-import java.util.ArrayList;
-
 public class ArrayValue extends Value {
     private static byte typeCode = 3;
-    public Element[] array = new Element[0];
-    public ArrayValue(Element[] array){
+    public Data[] array = new Data[0];
+    public ArrayValue(Data[] array){
         super(typeCode);
         this.array = array;
     }
     public ArrayValue(){
         super(typeCode);
     }
-    public void set(int index, Element val){
+    public void set(int index, Data val){
         array[index] =  val;
     }
-    public Element get(int index){
+    public Data get(int index){
         return array[index];
     }
-    public void add(Element val){
-        Element[] array = new Element[this.array.length];
+    public void add(Data val){
+        Data[] array = new Data[this.array.length];
         for(int i = 0; i < this.array.length; i++)
             array[i] = this.array[i];
         array[this.array.length] = val;
@@ -33,7 +31,7 @@ public class ArrayValue extends Value {
     }*/
     //To implement after equals methods are added
     public boolean toBool(){
-        for (Element e : array)
+        for (Data e : array)
             if (!e.toBool())
                 return false;
         return true;
@@ -42,12 +40,12 @@ public class ArrayValue extends Value {
     public String toString(){
         boolean first = true;
         StringBuilder sb = new StringBuilder("{ ");
-        for(Element e: array) {
+        for(Data data: array) {
             if (first)
                 first = false;
             else
                 sb.append(", ");
-            sb.append(e == null ? "null" : e.toString());
+            sb.append(data == null ? "null" : data.toString());
         }
         return sb.append(" }").toString();
     }

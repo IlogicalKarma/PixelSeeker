@@ -8,5 +8,8 @@ public abstract class Value {
     public byte type(){
         return typeCode;
     }
+    public Data toData(){
+        return new Data(this);
+    }
     public abstract boolean toBool();
 }

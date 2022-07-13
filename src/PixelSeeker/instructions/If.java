@@ -1,7 +1,7 @@
 package PixelSeeker.instructions;
 
-import PixelSeeker.DataStorage.Element;
-import PixelSeeker.DataStorage.NameManagement;
+import PixelSeeker.DataStorage.Data;
+import PixelSeeker.DataStorage.Context;
 import PixelSeeker.DataStorage.NumericalElement;
 import PixelSeeker.exceptions.ExpressionExtractionFailureException;
 import PixelSeeker.exceptions.IncorrectParametersException;
@@ -12,20 +12,18 @@ import PixelSeeker.expressions.Expression;
 public class If extends Instruction{
     final static String identifier = "if";
     static String type = "IfStatement";
-    public If(Expression paramExpression, InstructionSet instructionSet, NameManagement context) throws InstructionSyntaxException {
+    public If(Expression paramExpression, InstructionSet instructionSet, Context context) throws InstructionSyntaxException {
         super(paramExpression, 1, instructionSet, true, context);
     }
 
     @Override
-    public Element execute() throws PixelSeeker.exceptions.InvalidVariableNameException, ExpressionExtractionFailureException, IncorrectParametersException, RuntimeErrorException {
+    public Data execute() throws PixelSeeker.exceptions.InvalidVariableNameException, ExpressionExtractionFailureException, IncorrectParametersException, RuntimeErrorException {
         extract();
-        Element p = param.get(0);
-        if(!p.isNum())
-            throw new IncorrectParametersException("Supplied incorrect type of expression. Required: Num");
-        if(((NumericalElement) p).get()%2 == 1) {
-            p = instructionSet.execute();
-            if(p != null)
-                return p;
+        Data r;
+        if(param.get(0).toBool()) {
+            r = instructionSet.execute();
+            if(r != null)
+                return r;
         }
         return null;
     }

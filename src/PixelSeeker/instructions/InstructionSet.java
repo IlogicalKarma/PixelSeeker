@@ -1,6 +1,6 @@
 package PixelSeeker.instructions;
 
-import PixelSeeker.DataStorage.Element;
+import PixelSeeker.DataStorage.Data;
 import PixelSeeker.exceptions.RuntimeErrorException;
 
 import java.util.ArrayList;
@@ -28,11 +28,11 @@ public class InstructionSet {
     public int size(){
         return  instructions.size();
     }
-    public Element execute() throws RuntimeErrorException{
+    public Data execute() throws RuntimeErrorException{
         int limit = instructions.size();
         try {
             for (int i = 0; i < limit; i++) {
-                Element p = instructions.get(i).execute();
+                Data p = instructions.get(i).execute();
                 if(p != null)
                     return p;
             }
