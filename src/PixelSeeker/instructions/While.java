@@ -20,17 +20,16 @@ public class While extends Instruction{
     public Element execute() throws PixelSeeker.exceptions.InvalidVariableNameException, ExpressionExtractionFailureException, IncorrectParametersException, RuntimeErrorException {
         extract();
         if(!param.getElement(0).isNum())
-            throw new IncorrectParametersException("Supplied incorrect type of expression. Required: Num");
+            throw new IncorrectParametersException("Supplied incorrect type of value. Required: Num");
         NumericalElement p = (NumericalElement)param.getElement(0);
         Element r;
-
         while (p.toBool()){
             r = instructionSet.execute();
             if(r != null)
                 return r;
-            paramExpression.extract();
             if(!param.getElement(0).isNum())
                 throw new IncorrectParametersException("Supplied incorrect type of expression. Required: Num");
+            extract();
             p = (NumericalElement)param.getElement(0);
         }
         return null;

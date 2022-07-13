@@ -9,17 +9,18 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class Expression extends Element{
+
+    private static char[] nameBlacklist = new char[]{'(',')','[',']',};
     private NameManagement context;
     private String type;
     private String raw;
-    private boolean bool = false, isVar = false;
-    private int value = 0;
     private String string = "";
-    private OperatorHandler operatorHandler = OperatorHandler.getInstance();
-    private ArrayList<Element> elements  = new ArrayList<>();
+    private ArrayList<ArrayList<Element>> listsOfElements  = new ArrayList<>();
     private ArrayList<OperatorHandler.Operator> operators = new ArrayList<>();
     public Expression(String raw, NameManagement context) throws ExpressionExtractionFailureException{
         super(5, context);
+        int index = 0;
+        listsOfElements.add(new ArrayList<Element>());
         this.context = context;
         raw = raw.trim();
         this.raw = raw;
@@ -28,22 +29,25 @@ public class Expression extends Element{
             throw new ExpressionExtractionFailureException("Empty expression");
         String valueString = new String();
         String op = new String();
-        int i = 0, elem = 0, nests, nestIndex;
+        int i = 0, nests, nestIndex;
+        boolean elem = true, first = true;
         OperatorHandler.Operator operator;
         char current;
         while(i < raw.length()) {
             current = raw.charAt(i++);
-            if (elem % 2 == 0) {
-                if (operatorHandler.operatorWhitelist(current)) {
+            if (elem) {
+                if (OperatorHandler.operatorWhitelist(current) ) {
                     i--;
-                    elem++;
+                    elem = !elem;
                     try {
-                        elements.add(value(valueString));
+                        listsOfElements.get(index).add(value(valueString));
                     }catch (NamingException e){
                         throw new ExpressionExtractionFailureException(e);
                     }
                     valueString = new String();
                 }else{
+                    if(first)
+                        first = false;
                     switch (current){
                         case '"':
                             boolean end = false;
@@ -51,10 +55,18 @@ public class Expression extends Element{
                             while(i < raw.length() && !end){
                                 switch (raw.charAt(i)) {
                                     case '\\':
-                                        if (raw.charAt(i + 1) == '"' || raw.charAt(i + 1) == '\\') {
-                                            i++;
+                                        // Chars affected by escape char
+                                        switch (raw.charAt(i + 1)){
+                                            case 'n':
+                                                valueString += '\n';
+                                                i++;
+                                            case '"':
+                                            case '\\':
+                                                i++;
+                                                break;
                                         }
                                         break;
+
                                     case '"':
                                         end = true;
                                         break;
@@ -77,84 +89,77 @@ public class Expression extends Element{
                             break;
                         case ')':
                             throw new ExpressionExtractionFailureException("Incorrect expression brackets placement");
-                        case '{':
-                            nestIndex = i-1;
-                            nests = 1;
-                            do
-                                if(raw.charAt(i) == '{')
-                                    nests++;
-                                else if(raw.charAt(i) == '}')
-                                    nests--;
-                            while(++i < raw.length() && nests != 0);
-                            if(nests != 0){
-                                throw new ExpressionExtractionFailureException("Incorrect array brackets placement");}
-                            valueString += raw.substring(nestIndex, i);
+                        case ',':
+                            try {
+                                listsOfElements.get(index++).add(value(valueString));
+                                listsOfElements.add(new ArrayList<Element>());
+                            }catch (NamingException e){
+                                throw new ExpressionExtractionFailureException(e);
+                            }
+                            valueString = new String();
                             break;
-                        case '}':
-                            throw new ExpressionExtractionFailureException("Incorrect array brackets placement");
-                        /*case ',':
-
-                            break;*/
                         default:
                             valueString += current;
                     }
                 }
             } else {
-                if(operatorHandler.operatorWhitelist(current)) {
+                if(OperatorHandler.operatorWhitelist(current)) {
                     op += current;
                 }else{
                     i--;
-                    elem++;
-                    operator = operatorHandler.operatorLookup(op);
-                    op = new String();
+                    elem = !elem;
+                    operator = OperatorHandler.operatorLookup(op);
                     if (operator == null)
                         throw new ExpressionExtractionFailureException("Invalid operator: " + op);
+                    op = new String();
                     operators.add(operator);
                 }
             }
         }
         try {
-            elements.add(value(valueString));
+            listsOfElements.get(index).add(value(valueString));
         }catch (NamingException e){
             throw new ExpressionExtractionFailureException(e.getMessage(),e);
         }
-        if(elem%2 == 1)
+        if(!elem)
             throw new ExpressionExtractionFailureException("Expected value in expression");
     }
 
-    public Element extract() throws ExpressionExtractionFailureException{
-        int i = 1, j = 0, k = 0, sizeElements = elements.size();
-        isVar = false;
-        Element v = elements.get(0), v1;
-        if(v.isExpr())
-            v = ((Expression)v).extract();
-        else if(v.isArray()) {
-            for (; k < ((ArrayElement)v).getLength(); k++)
-                ((ArrayElement) v).get().set(k, ((Expression)(((ArrayElement) v).get().get(k))).extract());
-        }
-        if(2 > sizeElements && v.isNamed()) { //here
-             set(v);
-             return v;
-        }
-        i = 1;
-        while(i < sizeElements && j < operators.size()) {
-            try {
-                v1 = elements.get(1);
-                if(v1.isExpr())
-                    v1 = ((Expression)v1).extract();
-                else if(v1.isArray()) {
-                    for (; k < ((ArrayElement)v1).getLength(); k++)
-                        ((ArrayElement) v1).get().set(k, ((Expression)(((ArrayElement) v1).get().get(k))).extract());
-                }
-                v = operators.get(j).apply(v, v1);
-            }catch (UnexpectedDataTypeException e){
-                throw new ExpressionExtractionFailureException("Failed to apply operator",e);
+    public ArrayElement extract() throws ExpressionExtractionFailureException{
+        ArrayElement extracted = new ArrayElement();
+        for(ArrayList<Element> elements : listsOfElements) {
+            int i = 1, j = 0, k = 0, sizeElements = elements.size();
+            Element v = elements.get(0), v1;
+            if (v.isExpr()){
+                v = ((Expression) v).extract();
+
             }
-            i++;
-            j++;
+            if(v.isArray() && ((ArrayElement) v).getLength() == 1)
+                ((ArrayElement) v).getElement(0).copyTo(v);
+            if (2 > sizeElements && v.isNamed()) {
+                extracted.get().add(v);
+                continue;
+            }
+            i = 1;
+            while (i < sizeElements && j < operators.size()) {
+                try {
+                    v1 = elements.get(1);
+                    if (v1.isExpr()){
+                        v1 = ((Expression) v1).extract();
+                    }
+                    if(v.isArray() && ((ArrayElement) v1).getLength() == 1)
+                        ((ArrayElement) v1).getElement(0).copyTo(v1);
+                    v = operators.get(j).apply(v, v1);
+                } catch (UnexpectedDataTypeException e) {
+                    throw new ExpressionExtractionFailureException("Failed to apply operator", e);
+                }
+                i++;
+                j++;
+            }
+            extracted.get().add(v);
         }
-        set(v);
-        return v;
+        set(extracted);
+        return extracted;
     }
 
     @Override
@@ -167,48 +172,11 @@ public class Expression extends Element{
             throw new ExpressionExtractionFailureException("Null value");
         string = string.trim().toLowerCase(Locale.ROOT);
         Integer r;
-        int i, nests;
-
         if (string.startsWith("\"") && string.endsWith("\"")) {
             return new StringElement(string.substring(1, string.length() - 1), context);
         }
         if (string.startsWith("(") && string.endsWith(")")) {
             return new Expression(string.substring(1, string.length() - 1), context);
-        }
-        if (string.startsWith("{") && string.endsWith("}")) {
-            String elemRaw = new String();
-            char c;
-            nests = 0;
-            ArrayElement array = new ArrayElement();
-            if(string.isEmpty())
-                return array;
-
-            // arrayRaw.split(",");
-            for(i = 1; i < string.length()-1; i++){
-                c = string.charAt(i);
-                switch (c){
-                    case ',':
-                        if(nests == 0) {
-                            array.get().add(new Expression(elemRaw, context));
-                            elemRaw = new String();
-                        }else
-                            elemRaw += c;
-                        break;
-                    case '{':
-                        nests++;
-                        elemRaw += c;
-                        break;
-                    case '}':
-                        nests--;
-                        elemRaw += c;
-                        break;
-                    default:
-                        elemRaw += c;
-                }
-
-            }
-            array.get().add(new Expression(elemRaw, context));
-            return array;
         }
         if (context.has(string))
             return context.get(string);
@@ -222,26 +190,27 @@ public class Expression extends Element{
             return context.get(string);
             //
         else {
-            if(string.contains("(") || string.contains("\"") || string.contains(")"))
-                throw new ExpressionExtractionFailureException("Illegal symbol found in declaration");
-            Element elem = new NumericalElement(string, 0, context);
-            return elem;
+            return new NumericalElement(string, 0, context);
         }
     }
 
     @Override
     public String toString() {
-        String output = "Expression: { ";
-        boolean first = true;
-        for(int i = 0; i < elements.size(); i++){
-            if(first)
-                first = false;
-            else
-                output += ", ";
-                output += (elements.get(i).toString());
+        StringBuilder output = new StringBuilder("Expression: ");
+        boolean first;
+        for (int i = 0; i < listsOfElements.size(); i--){
+            output.append("{ ");
+            first = true;
+            for (Element element : listsOfElements.get(i)) {
+                if (first)
+                    first = false;
+                else
+                    output.append(", ");
+                output.append(element);
+            }
+            output.append(" }" + " | Value: " + ((ArrayElement)value).getElement(i) == null ? "null" : ((ArrayElement)value).getElement(i));
         }
-        output += " | Value: " + value + " }";
-        return output;
+        return output.toString();
     }
 }
 

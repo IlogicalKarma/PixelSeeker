@@ -27,17 +27,9 @@ public abstract class Instruction{
         this.paramExpression = paramExpression;
     }
     protected void extract() throws IncorrectParametersException, ExpressionExtractionFailureException {
-        if(paramExpression.extract().isArray()){
-            if(((ArrayElement)paramExpression.get()).getLength() < paramNr) {
-                throw new IncorrectParametersException("Insufficient number of parameters supplied: Expected " + paramNr + ", Supplied " + ((ArrayElement) paramExpression.get()).getLength());
-            }else{
-                this.param = (ArrayElement) paramExpression.get();
-            }
-        }else{
-            throw new IncorrectParametersException("Parameters are to be supplied as arrays");
-        }
-
-
+        this.param = (ArrayElement) paramExpression.extract();
+        if(param.getLength() < paramNr)
+            throw new IncorrectParametersException("Insufficient number of parameters supplied: Expected " + paramNr + ", Supplied " + param.getLength());
     }
     public abstract Element execute() throws ExpressionExtractionFailureException, InvalidVariableNameException, IncorrectParametersException, RuntimeErrorException;
 }

@@ -1,8 +1,11 @@
 package PixelSeeker.DataStorage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class NameManagement {
+    ArrayList<String> keys = new ArrayList<>();
+    ArrayList<Element> vals = new ArrayList<>();
     private HashMap<String, Element> names = new HashMap<>();
     public Element get(String n){
         return names.get(n);
@@ -10,21 +13,22 @@ public class NameManagement {
     public NameManagement(){}
     public NameManagement(NameManagement outerContext){
         this.names = outerContext.getHash();
+        //Same variables come out here, no issues
     }
     public boolean has(String n){
         return names.containsKey(n);
     }
-    public boolean rem(String n){
-        if(names.containsKey(n)){
-            names.remove(n);
-            return true;
-        }
-        return false;
+    public void rem(String n){
+        names.remove(n);
     }
     public void set(String n, Element element) {
-        names.put(n, element);
+        names.put(n,element);
     }
     public HashMap<String, Element> getHash() {
-        return new HashMap<String, Element>(names);
+        HashMap<String, Element> innerContext = new HashMap<>();
+        names.forEach((String key, Element val) ->{
+            innerContext.put(key, names.get(key));
+        });
+        return innerContext;
     }
 }

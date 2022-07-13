@@ -6,7 +6,7 @@ import sun.rmi.runtime.NewThreadAction;
 public class StringElement extends Element{
     private static int type = 2;
 
-    public StringElement(String name, String value, NameManagement context){
+    public StringElement(String name, String value, NameManagement context) throws NamingException{
         super(name, type, context);
         set(value);
         super.initialized = true;
@@ -19,15 +19,14 @@ public class StringElement extends Element{
         super(type, context);
         set(new String());
     }
-    public StringElement(){
-        super(type);
-        set(new String());
-    }
-    public StringElement(String value){
-        super(type);
-        set(new String());
-    }
 
+    public StringElement(String value){
+        super(type, value);
+
+    }
+    public StringElement(){
+        this(new String());
+    }
     public void setValue(String value) {
         this.value = value;
     }

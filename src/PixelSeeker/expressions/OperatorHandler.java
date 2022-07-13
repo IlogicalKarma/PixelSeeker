@@ -8,27 +8,25 @@ import PixelSeeker.exceptions.UnexpectedDataTypeException;
 
 public class OperatorHandler {
     private OperatorHandler(){}
-    private static OperatorHandler operators = new OperatorHandler();
-    private final Equals equals = new Equals();
-    private final NEquals nequals = new NEquals();
-    private final Divide divide = new Divide();
-    private final Multiply multiply = new Multiply();
-    private final Remainder remainder = new Remainder();
-    private final Plus plus = new Plus();
-    private final Minus minus = new Minus();
-    private final Less less = new Less();
-    private final More more = new More();
-    private final LessE lessE = new LessE();
-    private final MoreE moreE = new MoreE();
-    private final And and = new And();
-    private final Or or = new Or();
-    private final Assign assign = new Assign();
-    private final Operator[] operatorsArray = {equals,nequals,divide,minus,multiply,remainder,plus,less,more,lessE,moreE,and,or,assign};
-    private final char[] whitelist = {'+','-','=','/','%','*','<','>','&','|','!'};
-    public static OperatorHandler getInstance() {
-        return operators;
-    }
-    public Operator operatorLookup(String id){
+    private static final OperatorHandler operators = new OperatorHandler();
+    private static final Equals equals = new Equals();
+    private static final NEquals nequals = new NEquals();
+    private static final Divide divide = new Divide();
+    private static final Multiply multiply = new Multiply();
+    private static final Remainder remainder = new Remainder();
+    private static final Plus plus = new Plus();
+    private static final Minus minus = new Minus();
+    private static final Less less = new Less();
+    private static final More more = new More();
+    private static final LessE lessE = new LessE();
+    private static final MoreE moreE = new MoreE();
+    private static final And and = new And();
+    private static final Or or = new Or();
+    private static final Assign assign = new Assign();
+    private static final Index index = new Index();
+    private static final Operator[] operatorsArray = {equals,nequals,divide,minus,multiply,remainder,plus,less,more,lessE,moreE,and,or,assign,index};
+    public static final char[] WHITELIST = {'+','-','=','/','%','*','<','>','&','|','!','.'};
+    public static Operator operatorLookup(String id){
         for(int i = 0; i < operatorsArray.length; i++){
             if(operatorsArray[i].verify(id)) {
                 return operatorsArray[i];
@@ -36,70 +34,93 @@ public class OperatorHandler {
         }
         return null;
     }
-    public boolean operatorWhitelist(char c){
-        for(char w : whitelist)
+    public static boolean operatorWhitelist(char c){
+        for(char w : WHITELIST)
             if(c == w)
                 return true;
         return false;
     }
-    public abstract class Operator{
-        public abstract boolean verify(String string);
-        public abstract Element apply(Element before, Element after) throws UnexpectedDataTypeException;
-    }
-    public class Equals extends Operator{
-        private String[] representations = {"=="};
-        private Equals(){}
+    public static abstract class Operator{
+        protected String[] representations;
         public boolean verify(String string) {
             for (int i = 0; i < representations.length; i++)
                 if(representations[i].equals(string))
                     return true;
             return false;
         }
+        public abstract Element apply(Element before, Element after) throws UnexpectedDataTypeException, RuntimeException;
+        protected Element defaultBehaviour(String[][] types) throws UnexpectedDataTypeException{
+            StringBuilder errorMessage = new StringBuilder("Operator accepts these configurations: ");
+            boolean first = true;
+            for(int i = 0; i < types.length && types[i].length == 2; i++) {
+                if (first)
+                    first = false;
+                else
+                    errorMessage.append(" | ");
+                errorMessage.append(types[i][0])
+                            .append(' ')
+                            .append(this.getClass().getSimpleName())
+                            .append(' ')
+                            .append(types[i][1]);
+            }
+            throw new UnexpectedDataTypeException(errorMessage.toString());
+        }
+
+    }
+    private static class Equals extends Operator{
+        private Equals(){
+            representations = new String[]{"=="};
+        }
 
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
+            //Num
             if(before.isNum() && after.isNum()) {
                 if (((NumericalElement) before).get() == ((NumericalElement) after).get())
                     return new NumericalElement(1);
                 return new NumericalElement(0);
             }
-            throw new UnexpectedDataTypeException("Before: " + ((NumericalElement) before).get() + "(numerical required) " + ", After: " + ((NumericalElement) after).get() + "(numerical required)");
+            //Str
+            if(before.isString() && after.isString()) {
+                if (((StringElement) before).get().equals(((StringElement) after).get()))
+                    return new NumericalElement(1);
+                return new NumericalElement(0);
+            }
+            return defaultBehaviour((new String[][]{ {"Num","Num"} }));
         }
 
     }
-    public class NEquals extends Operator{
-        private String[] representations = {"!="};
-        private NEquals(){}
-        public boolean verify(String string) {
-            for (int i = 0; i < representations.length; i++)
-                if(representations[i].equals(string))
-                    return true;
-            return false;
+    private static class NEquals extends Operator{
+        private NEquals(){
+            representations = new String[]{"!="};
         }
 
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
+            //Num
             if(before.isNum() && after.isNum()) {
                 if (((NumericalElement) before).get() != ((NumericalElement) after).get())
                     return new NumericalElement(1);
                 return new NumericalElement(0);
             }
-            throw new UnexpectedDataTypeException("Requires: numerical, numerical");
+            //Str
+            if(before.isString() && after.isString()) {
+                if (((StringElement) before).get().equals(((StringElement) after).get()))
+                    return new NumericalElement(0);
+                return new NumericalElement(1);
+            }
+            return defaultBehaviour((new String[][]{ {"Num","Num"} }));
         }
 
     }
-    public class Divide extends Operator{
-        private String[] representations = {"/"};
-        private Divide(){}
-        public boolean verify(String string) {
-            for (int i = 0; i < representations.length; i++)
-                if(representations[i].equals(string))
-                    return true;
-            return false;
+    private static class Divide extends Operator{
+        private Divide(){
+            representations = new String[]{"/"};
         }
+
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
             if(before.isNum() && after.isNum()) {
                 return new NumericalElement(((NumericalElement) before).get() / ((NumericalElement) after).get());
             }
-            throw new UnexpectedDataTypeException("Requires: numerical, numerical");
+            return defaultBehaviour((new String[][]{ {"Num","Num"} }));
         }
 
         @Override
@@ -108,19 +129,15 @@ public class OperatorHandler {
         }
     }
 
-    public class Multiply extends Operator {
-        private String[] representations = {"*"};
-        private Multiply(){}
-        public boolean verify(String string) {
-            for (int i = 0; i < representations.length; i++)
-                if(representations[i].equals(string))
-                    return true;
-            return false;
+    private static class Multiply extends Operator {
+        private Multiply(){
+            representations = new String[]{"*"};
         }
+
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
             if(before.isNum() && after.isNum())
                 return new NumericalElement(((NumericalElement) before).get()*((NumericalElement) after).get());
-            throw new UnexpectedDataTypeException("Requires: numerical, numerical");
+            return defaultBehaviour((new String[][]{ {"Num","Num"} }));
         }
         @Override
         public String toString() {
@@ -128,19 +145,15 @@ public class OperatorHandler {
         }
     }
 
-    public class Remainder extends Operator {
-        private String[] representations = {"%"};
-        private Remainder(){}
-        public boolean verify(String string) {
-            for (int i = 0; i < representations.length; i++)
-                if(representations[i].equals(string))
-                    return true;
-            return false;
+    private static class Remainder extends Operator {
+        private Remainder(){
+            representations = new String[]{"%"};
         }
+
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
             if(before.isNum() && after.isNum())
                 return new NumericalElement(((NumericalElement) before).get()%((NumericalElement) after).get());
-            throw new UnexpectedDataTypeException("Requires: numerical, numerical");
+            return defaultBehaviour((new String[][]{ {"Num","Num"} }));
         }
         @Override
         public String toString() {
@@ -148,15 +161,11 @@ public class OperatorHandler {
         }
     }
 
-    public class Plus extends Operator{
-        private String[] representations = {"+"};
-        private Plus(){}
-        public boolean verify(String string) {
-            for (int i = 0; i < representations.length; i++)
-                if(representations[i].equals(string))
-                    return true;
-            return false;
+    private static class Plus extends Operator{
+        private Plus(){
+            representations = new String[]{"+"};
         }
+
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
             //Sum
             if(before.isNum() && after.isNum())
@@ -175,7 +184,7 @@ public class OperatorHandler {
             //Offset after
             if(before.isNum() && after.isString())
                 return apply(after,before);
-            throw new UnexpectedDataTypeException("Requires: numerical, numerical/string, string/numerical, string/string, numerical");
+            return defaultBehaviour(new String[][]{ {"Num", "Num"}, {"Num", "Str"}, {"Str", "Num"}, {"Str", "Str"} });
         }
         @Override
         public String toString() {
@@ -183,15 +192,11 @@ public class OperatorHandler {
         }
     }
 
-    public class Minus extends Operator {
-        private String[] representations = {"-"};
-        private Minus(){}
-        public boolean verify(String string) {
-            for (int i = 0; i < representations.length; i++)
-                if(representations[i].equals(string))
-                    return true;
-            return false;
+    private static class Minus extends Operator {
+        private Minus(){
+            representations = new String[]{"-"};
         }
+
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
             //sub
             if(before.isNum() && after.isNum())
@@ -207,22 +212,18 @@ public class OperatorHandler {
             //Offset after
             if(before.isNum() && after.isString())
                 return apply(after,before);
-            throw new UnexpectedDataTypeException("Requires: numerical, numerical/string, numerical/numerical, string");
+            return defaultBehaviour(new String[][]{ {"Num", "Num"}, {"Num", "Str"}, {"Str", "Num"}, {"Str", "Str"} });
         }
         @Override
         public String toString() {
             return representations[0];
         }
     }
-    public class Less extends Operator{
-        private String[] representations = {"<"};
-        private Less(){}
-        public boolean verify(String string) {
-            for (int i = 0; i < representations.length; i++)
-                if(representations[i].equals(string))
-                    return true;
-            return false;
+    private static class Less extends Operator{
+        private Less(){
+            representations = new String[]{"<"};
         }
+
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
             //Int
             if(before.isNum() && after.isNum()) {
@@ -236,22 +237,30 @@ public class OperatorHandler {
                     return new NumericalElement(1);
                 return new NumericalElement(0);
             }
-            throw new UnexpectedDataTypeException("Requires: numerical, numerical/string, string");
+            //Str, Int
+            if(before.isString() && after.isNum()) {
+                if (((StringElement) before).get().length() < ((NumericalElement) after).get())
+                    return new NumericalElement(1);
+                return new NumericalElement(0);
+            }
+            //Int, Str
+            if(before.isNum() && after.isString()){
+                if (((NumericalElement) after).get() < ((StringElement) before).get().length())
+                    return new NumericalElement(1);
+                return new NumericalElement(0);
+            }
+            return defaultBehaviour(new String[][]{ {"Num", "Num"}, {"Num", "Str"}, {"Str", "Num"}, {"Str", "Str"} });
         }
         @Override
         public String toString() {
             return representations[0];
         }
     }
-    public class More extends Operator{
-        private String[] representations = {">"};
-        private More(){}
-        public boolean verify(String string) {
-            for (int i = 0; i < representations.length; i++)
-                if(representations[i].equals(string))
-                    return true;
-            return false;
+    private static class More extends Operator{
+        private More(){
+            representations = new String[]{">"};
         }
+
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
             //Int
             if(before.isNum() && after.isNum()) {
@@ -265,22 +274,30 @@ public class OperatorHandler {
                     return new NumericalElement(1);
                 return new NumericalElement(0);
             }
-            throw new UnexpectedDataTypeException("Requires: numerical, numerical/string, string");
+            //Str, Int
+            if(before.isString() && after.isNum()) {
+                if (((StringElement) before).get().length() > ((NumericalElement) after).get())
+                    return new NumericalElement(1);
+                return new NumericalElement(0);
+            }
+            //Int, Str
+            if(before.isNum() && after.isString()){
+                if (((NumericalElement) after).get() > ((StringElement) before).get().length())
+                    return new NumericalElement(1);
+                return new NumericalElement(0);
+            }
+            return defaultBehaviour(new String[][]{ {"Num", "Num"}, {"Num", "Str"}, {"Str", "Num"}, {"Str", "Str"} });
         }
         @Override
         public String toString() {
             return representations[0];
         }
     }
-    public class LessE extends Operator{
-        private String[] representations = {"<="};
-        private LessE(){}
-        public boolean verify(String string) {
-            for (int i = 0; i < representations.length; i++)
-                if(representations[i].equals(string))
-                    return true;
-            return false;
+    private static class LessE extends Operator{
+        private LessE(){
+            representations = new String[]{"<="};
         }
+
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
             //Int
             if(before.isNum() && after.isNum()) {
@@ -294,22 +311,30 @@ public class OperatorHandler {
                     return new NumericalElement(1);
                 return new NumericalElement(0);
             }
-            throw new UnexpectedDataTypeException("Requires: numerical, numerical/string, string");
+            //Str, Int
+            if(before.isString() && after.isNum()) {
+                if (((StringElement) before).get().length() <= ((NumericalElement) after).get())
+                    return new NumericalElement(1);
+                return new NumericalElement(0);
+            }
+            //Int, Str
+            if(before.isNum() && after.isString()){
+                if (((NumericalElement) after).get() <= ((StringElement) before).get().length())
+                    return new NumericalElement(1);
+                return new NumericalElement(0);
+            }
+            return defaultBehaviour(new String[][]{ {"Num", "Num"}, {"Num", "Str"}, {"Str", "Num"}, {"Str", "Str"} });
         }
         @Override
         public String toString() {
             return representations[0];
         }
     }
-    public class MoreE extends Operator{
-        private String[] representations = {">="};
-        private MoreE(){}
-        public boolean verify(String string) {
-            for (int i = 0; i < representations.length; i++)
-                if(representations[i].equals(string))
-                    return true;
-            return false;
+    private static class MoreE extends Operator{
+        private MoreE(){
+            representations = new String[]{">="};
         }
+
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
             //Int
             if(before.isNum() && after.isNum()) {
@@ -323,22 +348,30 @@ public class OperatorHandler {
                     return new NumericalElement(1);
                 return new NumericalElement(0);
             }
-            throw new UnexpectedDataTypeException("Requires: numerical, numerical/string, string");
+            //Str, Int
+            if(before.isString() && after.isNum()) {
+                if (((StringElement) before).get().length() >= ((NumericalElement) after).get())
+                    return new NumericalElement(1);
+                return new NumericalElement(0);
+            }
+            //Int, Str
+            if(before.isNum() && after.isString()){
+                if (((NumericalElement) after).get() >= ((StringElement) before).get().length())
+                    return new NumericalElement(1);
+                return new NumericalElement(0);
+            }
+            return defaultBehaviour(new String[][]{ {"Num", "Num"}, {"Num", "Str"}, {"Str", "Num"}, {"Str", "Str"} });
         }
         @Override
         public String toString() {
             return representations[0];
         }
     }
-    public class And extends Operator{
-        private String[] representations = {"&&"};
-        private And(){}
-        public boolean verify(String string) {
-            for (int i = 0; i < representations.length; i++)
-                if(representations[i].equals(string))
-                    return true;
-            return false;
+    private static class And extends Operator{
+        private And(){
+            representations = new String[]{"&&"};
         }
+
         public Element apply(Element before, Element after) throws UnexpectedDataTypeException{
             //Int
             if(before.isNum() && after.isNum()) {
@@ -346,22 +379,17 @@ public class OperatorHandler {
                     return new NumericalElement(1);
                 return new NumericalElement(0);
             }
-            //Str
-            if(before.isString() && after.isString()) {
-                if (((StringElement) before).get().length()%2 == 1 && ((StringElement) after).get().length()%2 == 1)
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
-            }
-            throw new UnexpectedDataTypeException("Requires: numerical, numerical/string, string");
+            return defaultBehaviour((new String[][]{ {"Num","Num"} }));
         }
         @Override
         public String toString() {
             return representations[0];
         }
     }
-    public class Or extends Operator{
-        private String[] representations = {"||"};
-        private Or(){}
+    private static class Or extends Operator{
+        private Or(){
+            representations = new String[]{"||"};
+        }
         public boolean verify(String string) {
             for (int i = 0; i < representations.length; i++)
                 if(representations[i].equals(string))
@@ -375,31 +403,36 @@ public class OperatorHandler {
                     return new NumericalElement(1);
                 return new NumericalElement(0);
             }
-            //Str
-            if(before.isString() && after.isString()) {
-                if (((StringElement) before).get().length()%2 == 1 || ((StringElement) after).get().length()%2 == 1)
-                    return new NumericalElement(1);
-                return new NumericalElement(0);
-            }
-            throw new UnexpectedDataTypeException("Requires: numerical, numerical/string, string");
+            return defaultBehaviour((new String[][]{ {"Num","Num"} }));
         }
         @Override
         public String toString() {
             return representations[0];
         }
     }
-    public class Assign extends Operator{
-        private String[] representations = {"="};
-
-        public boolean verify(String string) {
-            for (int i = 0; i < representations.length; i++)
-                if(representations[i].equals(string))
-                    return true;
-            return false;
+    private static class Assign extends Operator{
+        private Assign(){
+            representations = new String[]{"="};
         }
+
         public Element apply(Element before, Element after){
             after.copyTo(before);
             return before;
+        }
+        @Override
+        public String toString() {
+            return representations[0];
+        }
+    }
+    private static class Index extends Operator{
+        private Index(){
+            representations = new String[]{"."};
+        }
+
+        public Element apply(Element before, Element after) throws RuntimeException, UnexpectedDataTypeException{
+            if(before.isArray() && after.isNum())
+                return ((ArrayElement) before).getElement(((NumericalElement) after).get());
+            return defaultBehaviour((new String[][]{ {"Arr","Num"} }));
         }
         @Override
         public String toString() {

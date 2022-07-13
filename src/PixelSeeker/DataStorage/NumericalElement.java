@@ -1,9 +1,14 @@
 package PixelSeeker.DataStorage;
 
+import PixelSeeker.exceptions.ExpressionExtractionFailureException;
+import PixelSeeker.exceptions.NamingException;
+
+import java.util.ArrayList;
+
 public class NumericalElement extends Element{
     private static int type = 1;
 
-    public NumericalElement(String name, Integer value, NameManagement context) {
+    public NumericalElement(String name, Integer value, NameManagement context) throws NamingException {
         super(name, type, context);
         set(value);
         super.initialized = true;
@@ -13,19 +18,12 @@ public class NumericalElement extends Element{
         set(value);
     }
     public NumericalElement(Integer value) {
-        super(type);
-        set(value);
+        super(type, value);
     }
     public NumericalElement() {
-        super(type);
-        set(Integer.valueOf(0));
+        this(0);
     }
 
-    public NumericalElement(String name, NameManagement context) {
-        super(name, context);
-        set(Integer.valueOf(0));
-    }
-    @Override
     public Integer get() {
         return (Integer) value;
     }
@@ -34,8 +32,8 @@ public class NumericalElement extends Element{
     }
 
 
-    /*@Override
+    @Override
     public String toString() {
         return get().toString();
-    }*/
+    }
 }

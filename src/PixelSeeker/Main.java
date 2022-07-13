@@ -16,8 +16,7 @@ public class Main {
     static String commentIdentifier = "//";
     static InstructionSet main = new InstructionSet();
 
-    static InstructionSet read(String level) throws ExpressionExtractionFailureException, java.awt.AWTException, IncorrectParametersException, InstructionSyntaxException {
-        NameManagement mainContext = new NameManagement();
+    static InstructionSet read(String level, NameManagement context) throws ExpressionExtractionFailureException, java.awt.AWTException, IncorrectParametersException, InstructionSyntaxException {
         Expression expression;
         Instruction instruction;
         InstructionSet instructionSet = new InstructionSet();
@@ -33,12 +32,12 @@ public class Main {
             splitter = input.get(ln).indexOf(' ');
             firstArgument = splitter != -1 ? input.get(ln).substring(level.length(), input.get(ln).indexOf(' ')).trim() : null;
             if(firstArgument != null && InstructionHandler.canRetrieve(firstArgument)) {
-                expression = new Expression(input.get(ln).substring(input.get(ln).indexOf(' ')), mainContext);
+                expression = new Expression(input.get(ln).substring(input.get(ln).indexOf(' ')), context);
                 ln++;
-                InstructionSet codeBlock = read(level + "\t");
-                instruction = InstructionHandler.retrieve(firstArgument, expression, codeBlock, mainContext);
+                InstructionSet codeBlock = read(level + "\t", context);
+                instruction = InstructionHandler.retrieve(firstArgument, expression, codeBlock, context);
             }else {
-                instruction = new RunExpression(new Expression(input.get(ln), mainContext), mainContext);
+                instruction = new RunExpression(new Expression(input.get(ln), context), context);
                 ln++;
             }
             instructionSet.add(instruction);
@@ -63,7 +62,7 @@ public class Main {
             e.printStackTrace();
         }
         try {
-            main = read("");
+            main = read("", new NameManagement());
 
         }catch (Exception e){
             System.out.println("Error on line " + (ln+1));

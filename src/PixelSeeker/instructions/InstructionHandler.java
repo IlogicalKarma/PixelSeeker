@@ -9,9 +9,7 @@ import PixelSeeker.expressions.Expression;
 public class InstructionHandler{
     private InstructionHandler instructionHandler = new InstructionHandler();
     private InstructionHandler(){}
-    /*InstructionHandler getInstance(){
-        return instructionHandler;
-    }*/
+
     public static Instruction retrieve(String string, Expression param, InstructionSet instructionSet, NameManagement context) throws ExpressionExtractionFailureException, IncorrectParametersException, InstructionSyntaxException, java.awt.AWTException{
         switch (string.toLowerCase()){
             case If.identifier:

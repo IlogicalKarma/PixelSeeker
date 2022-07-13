@@ -1,7 +1,6 @@
 package PixelSeeker.instructions;
 
 import PixelSeeker.DataStorage.Element;
-import PixelSeeker.DataStorage.Function;
 import PixelSeeker.DataStorage.NameManagement;
 import PixelSeeker.exceptions.ExpressionExtractionFailureException;
 import PixelSeeker.exceptions.IncorrectParametersException;
