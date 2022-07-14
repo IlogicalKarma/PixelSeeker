@@ -1,5 +1,7 @@
 package PixelSeeker.storage;
 
+import PixelSeeker.exceptions.RuntimeErrorException;
+
 public class ArrayValue extends Value {
     private static byte typeCode = 3;
     public Data[] array = new Data[0];
@@ -15,6 +17,20 @@ public class ArrayValue extends Value {
     }
     public Data get(int index){
         return array[index];
+    }
+    public void del(int index)  {
+        Data[] array = new Data[this.array.length-1];
+        for(int i = 0; i < array.length; i++)
+            if(i >= index)
+                array[i] = this.array[i+1];
+            else
+                array[i] = this.array[i];
+    }
+    public ArrayValue subArr(int i0, int i1){
+        ArrayValue subArr = new ArrayValue();
+        while(i0 < i1)
+            subArr.array[i0] = array[i0++];
+        return subArr;
     }
     public void add(Data val){
         Data[] array = new Data[this.array.length+1];

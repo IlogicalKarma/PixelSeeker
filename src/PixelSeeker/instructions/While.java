@@ -10,7 +10,7 @@ import PixelSeeker.expressions.Expression;
 
 public class While extends Instruction{
     final static String identifier = "while";
-    static String type = "WhileStatement";
+    public final static boolean requiresInstructionSet = true;
     public While(Expression paramExpression, InstructionSet instructionSet, Context context) throws InstructionSyntaxException {
         super(paramExpression, 1, instructionSet, true, context);
     }

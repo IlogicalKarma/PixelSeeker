@@ -18,7 +18,6 @@ public abstract class Instruction{
     protected Context context;
     protected static String type;
     protected static String identifier;
-    protected static boolean rInstructionSet;
     public Instruction(Expression paramExpression, int paramNr, InstructionSet instructionSet, boolean requiresInstructionSet, Context context) throws InstructionSyntaxException {
         this.context = new Context(context);
         this.paramExpression = paramExpression;

@@ -8,9 +8,9 @@ import PixelSeeker.exceptions.InstructionSyntaxException;
 import PixelSeeker.expressions.Expression;
 
 public class Out extends Instruction{
-    final static String identifier = "out";
-    static String type = "Out";
-    public Out(Expression paramExpression, Context context) throws InstructionSyntaxException {
+    public final static String identifier = "out";
+    public final static boolean requiresInstructionSet = false;
+    Out(Expression paramExpression, Context context) throws InstructionSyntaxException {
         super(paramExpression, -1, null, false, context);
     }
     @Override

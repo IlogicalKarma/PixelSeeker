@@ -9,9 +9,9 @@ import PixelSeeker.exceptions.InvalidVariableNameException;
 import PixelSeeker.expressions.Expression;
 
 public class Return extends Instruction{
-    final static String identifier = "return";
-    static String type = "Return";
-    public Return(Expression paramExpression, Context context) throws InstructionSyntaxException, ExpressionExtractionFailureException {
+    public final static String identifier = "return";
+    public final static boolean requiresInstructionSet = false;
+    Return(Expression paramExpression, Context context) throws InstructionSyntaxException {
         super(paramExpression, -1, null, false, context);
     }
 

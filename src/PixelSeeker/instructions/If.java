@@ -10,8 +10,8 @@ import PixelSeeker.expressions.Expression;
 
 public class If extends Instruction{
     final static String identifier = "if";
-    static String type = "IfStatement";
-    public If(Expression paramExpression, InstructionSet instructionSet, Context context) throws InstructionSyntaxException {
+    public final static boolean requiresInstructionSet = false;
+    If(Expression paramExpression, InstructionSet instructionSet, Context context) throws InstructionSyntaxException {
         super(paramExpression, 1, instructionSet, true, context);
     }
 

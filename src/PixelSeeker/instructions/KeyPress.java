@@ -11,7 +11,7 @@ import java.awt.Robot;
 
 public class KeyPress extends Instruction {
     private static Robot robot;
-    static String type = "KeyPress";
+    public final static boolean requiresInstructionSet = false;
     final static String identifier = "keypress";
     static {
         try {
@@ -21,7 +21,7 @@ public class KeyPress extends Instruction {
             System.exit(1);
         }
     }
-    public KeyPress(Expression paramExpression, Context context) throws java.awt.AWTException, InstructionSyntaxException {
+    KeyPress(Expression paramExpression, Context context) throws java.awt.AWTException, InstructionSyntaxException {
         super(paramExpression,2, null, false, context);
 
     }

@@ -4,6 +4,8 @@ import PixelSeeker.storage.Context;
 import PixelSeeker.exceptions.InstructionSyntaxException;
 import PixelSeeker.expressions.Expression;
 
+import java.security.Key;
+
 public class InstructionHandler{
     private InstructionHandler instructionHandler = new InstructionHandler();
     private InstructionHandler(){}
@@ -27,15 +29,15 @@ public class InstructionHandler{
     public static Boolean preRetrieve(String string){
         switch (string.toLowerCase()){
             case If.identifier:
-                return true;
+                return If.requiresInstructionSet;
             case While.identifier:
-                return true;
+                return While.requiresInstructionSet;
             case KeyPress.identifier:
-                return true;
+                return KeyPress.requiresInstructionSet;
             case Out.identifier:
-                return true;
+                return Out.requiresInstructionSet;
             case Assign.identifier:
-                return true;
+                return Assign.requiresInstructionSet;
             default:
                 return null;
         }

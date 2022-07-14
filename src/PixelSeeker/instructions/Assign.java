@@ -8,16 +8,15 @@ import PixelSeeker.exceptions.InstructionSyntaxException;
 import PixelSeeker.expressions.Expression;
 
 public class Assign extends Instruction{
-    static String type = "Assign";
-    final static String identifier = "assign";
-    public Assign(Expression paramExpression, Context context) throws InstructionSyntaxException {
+    public final static boolean requiresInstructionSet = false;
+    public final static String identifier = "assign";
+    Assign(Expression paramExpression, Context context) throws InstructionSyntaxException {
         super(paramExpression,2, null, false,context);
     }
     public Data execute() throws ExpressionExtractionFailureException, IncorrectParametersException  {
         extract();
-        if(param[0].isNamed())
-            throw new IncorrectParametersException("Supplied incorrect type of expression(first parameter). Required: Var");
-        param[0].name(param[1].getName());
+        for(int i = 0; i < param.length; i++)
+            param[i].copyTo(param[0]);
         return null;
     }
 }

@@ -10,11 +10,11 @@ import PixelSeeker.expressions.Expression;
 
 
 public class DefFunction extends Instruction{
-
-    final static String identifier = "def";
+    public final static String identifier = "def";
+    public final static boolean requiresInstructionSet = true;
     static String type = "DefFunction";
     private String name;
-    public DefFunction(Expression paramExpression, InstructionSet instructionSet, Context context) throws InstructionSyntaxException {
+    DefFunction(Expression paramExpression, InstructionSet instructionSet, Context context) throws InstructionSyntaxException {
         super(paramExpression, 1, instructionSet, true, context);
     }
 
