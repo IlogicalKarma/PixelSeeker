@@ -1,4 +1,4 @@
-package PixelSeeker.storage;
+package PixelSeeker.expressions;
 
 public interface Element {
     public String toString();

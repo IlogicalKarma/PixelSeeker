@@ -1,6 +1,5 @@
 package PixelSeeker;
 
-import PixelSeeker.instruction_library.*;
 import PixelSeeker.storage.Context;
 import PixelSeeker.expressions.Expression;
 

@@ -1,4 +1,4 @@
-package PixelSeeker.instruction_library;
+package PixelSeeker.instruction_internal_library;
 
 import PixelSeeker.Instruction;
 import PixelSeeker.InstructionSet;
@@ -9,21 +9,17 @@ import PixelSeeker.expressions.Expression;
 import PixelSeeker.storage.Context;
 import PixelSeeker.storage.Data;
 
-public class Out extends Instruction {
-    public final static String identifier = "out";
+public class Assign extends Instruction {
     public final static boolean requiresInstructionSet = false;
+    public final static String identifier = "assign";
 
-    public Out(Expression paramExpression, InstructionSet instructionSet, Context context) throws InstructionSyntaxException {
-        super(paramExpression, -1, null, false, context);
+    public Assign(Expression paramExpression, InstructionSet instructionSet, Context context) throws InstructionSyntaxException {
+        super(paramExpression, 2,null , requiresInstructionSet, context);
     }
 
-    @Override
     public Data execute() throws ExpressionExtractionFailureException, IncorrectParametersException {
-        if (param.length == 0) {
-            System.out.println("\n");
-            return null;
-        }
-        System.out.print(paramData.toUserString());
+        for (int i = 0; i < param.length; i++)
+            param[i].copyTo(param[0]);
         return null;
     }
 }

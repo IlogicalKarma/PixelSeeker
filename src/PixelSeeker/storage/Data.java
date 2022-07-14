@@ -1,9 +1,10 @@
 package PixelSeeker.storage;
 
 import PixelSeeker.exceptions.NamingErrorException;
+import PixelSeeker.expressions.Element;
 import PixelSeeker.expressions.OperatorHandler;
 
-public class Data implements Element{
+public class Data implements Element {
     public final static byte NUM = 1;
     public final static byte STR = 2;
     public final static byte ARR = 3;

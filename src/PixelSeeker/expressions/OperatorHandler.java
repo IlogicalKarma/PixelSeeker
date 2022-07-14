@@ -1,7 +1,6 @@
 package PixelSeeker.expressions;
 
 import PixelSeeker.storage.Data;
-import PixelSeeker.storage.Element;
 import PixelSeeker.exceptions.UnexpectedDataTypeException;
 
 import static PixelSeeker.storage.Data.getNum;

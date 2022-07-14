@@ -1,4 +1,4 @@
-package PixelSeeker.instruction_library;
+package PixelSeeker.instruction_internal_library;
 
 import PixelSeeker.Instruction;
 import PixelSeeker.InstructionSet;
@@ -10,19 +10,16 @@ import PixelSeeker.expressions.Expression;
 import PixelSeeker.storage.Context;
 import PixelSeeker.storage.Data;
 
-public class DefFunction extends Instruction {
-    public final static String identifier = "def";
-    public final static boolean requiresInstructionSet = true;
-    static String type = "DefFunction";
-    private String name;
+public class Return extends Instruction {
+    public final static String identifier = "return";
+    public final static boolean requiresInstructionSet = false;
 
-    public DefFunction(Expression paramExpression, InstructionSet instructionSet, Context context) throws InstructionSyntaxException {
-        super(paramExpression, 1, instructionSet, requiresInstructionSet, context);
+    public Return(Expression paramExpression, InstructionSet instructionSet, Context context) throws InstructionSyntaxException {
+        super(paramExpression, -1, null, false, context);
     }
 
     @Override
     public Data execute() throws ExpressionExtractionFailureException, InvalidVariableNameException, IncorrectParametersException {
-        //new Function(name, param, instructionSet);
-        return null;
+        return paramData;
     }
 }
