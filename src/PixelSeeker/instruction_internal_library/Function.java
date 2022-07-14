@@ -9,20 +9,25 @@ import PixelSeeker.exceptions.InvalidVariableNameException;
 import PixelSeeker.expressions.Expression;
 import PixelSeeker.storage.Context;
 import PixelSeeker.storage.Data;
+import PixelSeeker.storage.FunctionValue;
 
 public class Function extends Instruction {
-    public final static String identifier = "def";
+    public final static String identifier = "fun";
     public final static boolean requiresInstructionSet = true;
-    static String type = "DefFunction";
-    private String name;
-
     public Function(Expression paramExpression, InstructionSet instructionSet, Context context) throws InstructionSyntaxException {
-        super(paramExpression, 1, instructionSet, requiresInstructionSet, context);
+        super(paramExpression, -1, instructionSet, requiresInstructionSet, null);
     }
 
     @Override
     public Data execute() throws ExpressionExtractionFailureException, InvalidVariableNameException, IncorrectParametersException {
+        extract();
         //new Function(name, param, instructionSet);
+        new Data(new FunctionValue(
+                (Data param)->{
+                    instructionSet.
+                }
+        ));
+
         return null;
     }
 }

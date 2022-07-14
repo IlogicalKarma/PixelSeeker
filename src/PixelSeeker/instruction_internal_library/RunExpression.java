@@ -18,6 +18,7 @@ public class RunExpression extends Instruction {
     }
 
     public Data execute() throws ExpressionExtractionFailureException, IncorrectParametersException {
+        extract();
         return null;
     }
 }

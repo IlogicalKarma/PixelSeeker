@@ -17,6 +17,7 @@ public class If extends Instruction {
 
     @Override
     public Data execute() throws InvalidVariableNameException, ExpressionExtractionFailureException, IncorrectParametersException, RuntimeErrorException {
+        extract();
         Data r;
         if (paramData.toBool()) {
             r = instructionSet.execute();

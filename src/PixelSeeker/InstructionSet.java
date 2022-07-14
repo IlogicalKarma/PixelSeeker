@@ -32,7 +32,6 @@ public class InstructionSet {
         int limit = instructions.size();
         try {
             for (int i = 0; i < limit; i++) {
-                instructions.get(i).extract();
                 Data p = instructions.get(i).execute();
                 if(p != null)
                     return p;

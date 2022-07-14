@@ -19,6 +19,7 @@ public class Out extends Instruction {
 
     @Override
     public Data execute() throws ExpressionExtractionFailureException, IncorrectParametersException {
+        extract();
         if (param.length == 0) {
             System.out.println("\n");
             return null;

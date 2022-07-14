@@ -17,6 +17,7 @@ public class While extends Instruction {
 
     @Override
     public Data execute() throws InvalidVariableNameException, ExpressionExtractionFailureException, IncorrectParametersException, RuntimeErrorException {
+        extract();
         Data r, p;
         while (paramData.toBool()) {
             r = instructionSet.execute();

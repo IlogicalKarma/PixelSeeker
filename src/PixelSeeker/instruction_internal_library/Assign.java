@@ -18,6 +18,7 @@ public class Assign extends Instruction {
     }
 
     public Data execute() throws ExpressionExtractionFailureException, IncorrectParametersException {
+        extract();
         for (int i = 0; i < param.length; i++)
             param[i].copyTo(param[0]);
         return null;

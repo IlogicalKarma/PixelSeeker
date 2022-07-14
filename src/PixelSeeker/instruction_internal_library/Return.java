@@ -20,6 +20,7 @@ public class Return extends Instruction {
 
     @Override
     public Data execute() throws ExpressionExtractionFailureException, InvalidVariableNameException, IncorrectParametersException {
+        extract();
         return paramData;
     }
 }
