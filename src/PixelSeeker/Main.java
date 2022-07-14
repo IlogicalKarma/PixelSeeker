@@ -3,7 +3,6 @@ package PixelSeeker;
 import PixelSeeker.storage.Context;
 import PixelSeeker.exceptions.*;
 import PixelSeeker.expressions.Expression;
-import PixelSeeker.instructions.*;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -20,7 +19,7 @@ public class Main {
         Expression expression;
         Instruction instruction;
         InstructionSet instructionSet = new InstructionSet();
-        String firstArgument;
+        String firstArgument, rawExpression;
         int splitter;
         while(input.size() > ln){
             if(input.get(ln).startsWith(commentIdentifier) || input.get(ln).trim().isEmpty()){
@@ -30,18 +29,13 @@ public class Main {
             if(!input.get(ln).startsWith(level) && !level.isEmpty())
                 return instructionSet;
             splitter = input.get(ln).indexOf(' ');
-            firstArgument = splitter != -1 ? input.get(ln).substring(level.length(), input.get(ln).indexOf(' ')).trim() : null;
-            if(firstArgument != null && InstructionHandler.preRetrieve(firstArgument)) {
-                expression = new Expression(input.get(ln).substring(input.get(ln).indexOf(' ')), context);
-                ln++;
-                InstructionSet codeBlock = read(level + "\t", context);
-                instruction = InstructionHandler.retrieve(firstArgument, expression, codeBlock, context);
-            }else {
-                instruction = new RunExpression(new Expression(input.get(ln), context), context);
-                ln++;
-            }
+            firstArgument = splitter != -1 ? input.get(ln).substring(level.length(), splitter).trim() : "";
+            rawExpression = splitter != -1 ? input.get(ln).substring(splitter) : input.get(ln);
+            expression = new Expression(rawExpression.isEmpty() ? null : rawExpression, context);
+            ln++;
+            InstructionSet codeBlock = read(level + "\t", context);
+            instruction = InstructionHandler.retrieve(firstArgument, expression, codeBlock, context);
             instructionSet.add(instruction);
-
         }
         return instructionSet;
     }
@@ -57,7 +51,7 @@ public class Main {
             return;
         }
         try {
-            input = Files.readAllLines(Paths.get(p), StandardCharsets.US_ASCII);
+            input = Files.readAllLines(Paths.get(p), StandardCharsets.UTF_8);
         }catch (java.io.IOException e){
             e.printStackTrace();
         }

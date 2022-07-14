@@ -1,4 +1,4 @@
-package PixelSeeker.instructions;
+package PixelSeeker;
 
 import PixelSeeker.storage.Data;
 import PixelSeeker.storage.Context;

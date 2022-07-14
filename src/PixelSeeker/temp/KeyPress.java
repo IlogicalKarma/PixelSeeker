@@ -1,5 +1,7 @@
-package PixelSeeker.instructions;
+package PixelSeeker.temp;
 
+import PixelSeeker.Instruction;
+import PixelSeeker.InstructionSet;
 import PixelSeeker.storage.Data;
 import PixelSeeker.storage.Context;
 import PixelSeeker.exceptions.ExpressionExtractionFailureException;
@@ -21,12 +23,11 @@ public class KeyPress extends Instruction {
             System.exit(1);
         }
     }
-    KeyPress(Expression paramExpression, Context context) throws java.awt.AWTException, InstructionSyntaxException {
+    public KeyPress(Expression paramExpression, InstructionSet instructionSet, Context context) throws java.awt.AWTException, InstructionSyntaxException {
         super(paramExpression,2, null, false, context);
 
     }
     public Data execute() throws ExpressionExtractionFailureException, IncorrectParametersException {
-        extract();
         if(!param[0].isNum() || !param[1].isNum())
             throw new IncorrectParametersException("Supplied incorrect type of expression. Required: Num");
         robot.keyPress(param[0].toNum());
