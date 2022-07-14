@@ -2,10 +2,7 @@ package PixelSeeker.instruction_internal_library;
 
 import PixelSeeker.Instruction;
 import PixelSeeker.InstructionSet;
-import PixelSeeker.exceptions.ExpressionExtractionFailureException;
-import PixelSeeker.exceptions.IncorrectParametersException;
-import PixelSeeker.exceptions.InstructionSyntaxException;
-import PixelSeeker.exceptions.InvalidVariableNameException;
+import PixelSeeker.exceptions.*;
 import PixelSeeker.expressions.Expression;
 import PixelSeeker.storage.Context;
 import PixelSeeker.storage.Data;
@@ -19,12 +16,12 @@ public class Function extends Instruction {
     }
 
     @Override
-    public Data execute() throws ExpressionExtractionFailureException, InvalidVariableNameException, IncorrectParametersException {
+    public Data execute() throws ExpressionExtractionFailureException, RuntimeErrorException, InvalidVariableNameException, IncorrectParametersException {
         extract();
         //new Function(name, param, instructionSet);
         new Data(new FunctionValue(
                 (Data param)->{
-                    instructionSet.
+                    return instructionSet.execute();
                 }
         ));
 

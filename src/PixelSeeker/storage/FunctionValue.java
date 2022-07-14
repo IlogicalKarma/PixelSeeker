@@ -1,5 +1,7 @@
 package PixelSeeker.storage;
 
+import PixelSeeker.exceptions.RuntimeErrorException;
+
 public class FunctionValue extends Value{
     private FunLambda lambda;
     private Data lastData = null;
@@ -8,7 +10,7 @@ public class FunctionValue extends Value{
         super(Data.FUN);
         this.lambda = lambda;
     }
-    public Data extract(Data parameters){
+    public Data extract(Data parameters) throws RuntimeErrorException {
         lastData = lambda.run(parameters);
         lastParameters = parameters;
         return lastData;

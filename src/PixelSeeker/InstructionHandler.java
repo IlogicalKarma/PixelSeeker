@@ -6,7 +6,7 @@ import PixelSeeker.expressions.Expression;
 import java.lang.reflect.InvocationTargetException;
 
 public class InstructionHandler {
-    private final static String library = "instruction_library";
+    private final static String library = "instruction_internal_library";
     private InstructionHandler(){}
 
     public static Instruction retrieve(String string, Expression paramExpression, InstructionSet instructionSet, Context context) {
