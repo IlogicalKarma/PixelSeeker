@@ -19,8 +19,9 @@ public class Main {
         Expression expression;
         Instruction instruction;
         InstructionSet instructionSet = new InstructionSet();
-        String firstArgument, rawExpression;
+        String identifier, rawExpression;
         int splitter;
+        Class c;
         while(input.size() > ln){
             if(input.get(ln).startsWith(commentIdentifier) || input.get(ln).trim().isEmpty()){
                 ln++;
@@ -29,12 +30,15 @@ public class Main {
             if(!input.get(ln).startsWith(level) && !level.isEmpty())
                 return instructionSet;
             splitter = input.get(ln).indexOf(' ');
-            firstArgument = splitter != -1 ? input.get(ln).substring(level.length(), splitter).trim() : "";
-            rawExpression = splitter != -1 ? input.get(ln).substring(splitter) : input.get(ln);
-            expression = new Expression(rawExpression.isEmpty() ? null : rawExpression, context);
+            identifier = splitter != -1 ? input.get(ln).substring(level.length(), splitter).trim() : input.get(ln);
+            c = InstructionHandler.getClass(identifier);
+            rawExpression = splitter != -1 ? input.get(ln).substring(splitter) : "";
+            if(InstructionHandler.nullIdentifierCheck(c))
+                rawExpression = input.get(ln);
+            expression = new Expression(rawExpression, context);
             ln++;
-            InstructionSet codeBlock = read(level + "\t", context);
-            instruction = InstructionHandler.retrieve(firstArgument, expression, codeBlock, context);
+            InstructionSet codeBlock = InstructionHandler.requiresInstructionSetCheck(c) ? read(level + "\t", context) : null;
+            instruction = InstructionHandler.retrieve(c , expression, codeBlock, context);
             instructionSet.add(instruction);
         }
         return instructionSet;

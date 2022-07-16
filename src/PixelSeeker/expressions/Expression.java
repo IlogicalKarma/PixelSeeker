@@ -7,6 +7,7 @@ import PixelSeeker.exceptions.UnexpectedDataTypeException;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 public class Expression implements Element {
     private Context context;
@@ -19,7 +20,6 @@ public class Expression implements Element {
         this.context = context;
         raw = raw.trim();
         this.raw = raw;
-        //System.out.println(raw);   //here
         if(raw.isEmpty())
             return;
         String valueString = new String();
@@ -47,27 +47,38 @@ public class Expression implements Element {
                         case '"':
                             boolean end = false;
                             valueString += current;
-                            while(i < raw.length() && !end){
+                            while(!end) {
+                                if(i >= raw.length())
+                                    throw new ExpressionExtractionFailureException("Unfinished string quotations");
                                 // Special chars
                                 switch (raw.charAt(i)) {
                                     case '\\':
-                                        // Chars affected by escape char
-                                        switch (raw.charAt(i + 1)){
-                                            case 'n':
-                                                valueString += '\n';
-                                                i++;
-                                            case '"':
-                                            case '\\':
-                                                i++;
-                                                break;
-                                        }
-                                        break;
 
+                                        // Chars affected by escape char
+                                        if (++i < raw.length())
+                                            switch (raw.charAt(i)) {
+                                                case 'n':
+                                                    valueString += '\n';
+                                                    break;
+                                                case '"':
+                                                    valueString += '"';
+                                                    break;
+                                                case '\\':
+                                                    valueString += '\\';
+                                                    break;
+                                                default:
+                                                    valueString += '\\';
+                                                    break;
+                                            }
+                                        break;
                                     case '"':
+                                        valueString += "\"";
                                         end = true;
                                         break;
+                                    default:
+                                        valueString += raw.charAt(i);
                                 }
-                                valueString += raw.charAt(i++);
+                                i++;
                             }
                             break;
                         case '(':
@@ -128,6 +139,10 @@ public class Expression implements Element {
         Element aux;
         for(ArrayList<Element> elements : listsOfElements) {
             int i = 1, j = 0, k = 0, sizeElements = elements.size();
+            if(sizeElements == 0) {
+                extracted.add(Data.getNum(0));
+                continue;
+            }
             aux = elements.get(0);
             if (aux instanceof Expression)
                 var1 = ((Expression) aux).extract();
@@ -136,8 +151,8 @@ public class Expression implements Element {
             if(var1.isArr() && var1.toArr().length == 1)
                 var1.toArr()[0].copyTo(var1);
             if (sizeElements == 1 && var1.isNamed()) {
-                extracted.add(var1);
-                continue;
+                    extracted.add(var1);
+                    continue;
             }
             i = 1;
             while (i < sizeElements) {
@@ -194,10 +209,9 @@ public class Expression implements Element {
 
     @Override
     public String toString() {
-        StringBuilder output = new StringBuilder("Expression: ");
+        StringBuilder output = new StringBuilder("[ ");
         boolean first;
         for (int i = 0; i < listsOfElements.size(); i++){
-            output.append("{ ");
             first = true;
             for (Element element : listsOfElements.get(i)) {
                 if (first)
@@ -206,9 +220,10 @@ public class Expression implements Element {
                     output.append(' ');
                 output.append(element);
             }
-            output.append(" }" + " | Value: " + (data == null ? "null" : data.toStr()));
+            output.append(" | Value: " + (data == null ? "null" : data.toString()));
         }
-        return output.toString();
+
+        return output.append("] ").toString();
     }
 }
 

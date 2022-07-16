@@ -10,7 +10,7 @@ public class Data implements Element {
     public final static byte ARR = 3;
     public final static byte FUN = 4;
     public final static byte EXPR = 5;
-    private static char[] nameBlacklist = new char[]{'(', ')', '[', ']', '{', '}'};
+    private static char[] nameBlacklist = new char[]{'(', ')', '[', ']', '{', '}','"'};
     private boolean initialized = false;
     private String name = null;
     private Value value = null;

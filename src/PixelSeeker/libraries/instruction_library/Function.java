@@ -1,4 +1,4 @@
-package PixelSeeker.instruction_internal_library;
+package PixelSeeker.libraries.instruction_library;
 
 import PixelSeeker.Instruction;
 import PixelSeeker.InstructionSet;
