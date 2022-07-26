@@ -20,10 +20,7 @@ public class Out extends Instruction {
     @Override
     public Data execute() throws ExpressionExtractionFailureException, IncorrectParametersException {
         extract();
-        if (param.length == 1) {
-            System.out.print(param[0].toUserString());
-        }else
-        System.out.print(paramData.toString());
+        System.out.print(paramData.toUserString());
         return null;
     }
 }
