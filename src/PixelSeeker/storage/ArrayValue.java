@@ -54,15 +54,15 @@ public class ArrayValue extends Value {
     }
     private String toStrings(boolean forUser){
         boolean first = true;
-        StringBuilder sb = new StringBuilder("{ ");
+        StringBuilder sb = new StringBuilder(forUser ? "" : "{ ");
         for(Data data: array) {
             if (first)
                 first = false;
             else
-                sb.append(", ");
-            sb.append(data == null ? "null" : (forUser ? data.toUserString() : data.toString()));
+                sb.append(forUser ? "" : ", ");
+            sb.append(data == null ? "null" : (forUser && !data.isArr() ? data.toUserString() : data.toString()));
         }
-        return sb.append(" }").toString();
+        return sb.append(forUser ? "" : " }").toString();
     }
     @Override
     public String toString(){

@@ -20,14 +20,19 @@ public class InstructionHandler {
                 System.out.println("Internal error: incorrect instruction constructor");
             else
                 System.out.println("Internal error: unknown instantiation error");
+            e.printStackTrace();
             System.exit(-1);
         }
         return null;
     }
     public static boolean check(String string) {
         try {
-            return Util.getClassFromLibrary(string, library).getField("id") != null;
-        }catch (NoSuchFieldException e){}
+            return Util.getClassFromLibrary(string, library).getField("identifier").get(null) != null;
+        }catch (NoSuchFieldException | IllegalAccessException e){
+            System.out.println("Internal error: static field not present in class");
+            e.printStackTrace();
+            System.exit(1);
+        }
         return false;
     }
 

@@ -9,7 +9,7 @@ import PixelSeeker.storage.Data;
 
 public class If extends Instruction {
     public final static String identifier = "if";
-    public final static boolean requiresInstructionSet = false;
+    public final static boolean requiresInstructionSet = true;
 
     public If(Expression paramExpression, InstructionSet instructionSet, Context context) throws InstructionSyntaxException {
         super(paramExpression, 1, instructionSet, requiresInstructionSet, context);

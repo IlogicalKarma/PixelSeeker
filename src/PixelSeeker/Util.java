@@ -38,6 +38,7 @@ public class Util {
                 System.out.println("Internal error: cannot access class");
             else
                 System.out.println("Internal error: library classes must have an identifier field");
+            e.printStackTrace();
             System.exit(-1);
         }
         return defaultC;

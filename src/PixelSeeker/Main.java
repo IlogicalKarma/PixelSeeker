@@ -40,12 +40,11 @@ public class Main {
         return instructionSet;
     }
     public static void main(String[] args) {
-        /*if(args.length < 1){
+        if(args.length < 1){
             System.out.println("Provided empty path");
             return;
         }
-        String p = args[0];*/
-        String p = "C:\\WorkingDirectory\\fibo.pskr";
+        String p = args[0];
         if(!p.endsWith(".pskr")){
             System.out.println("Invalid file type. File must be of type \".pskr\".");
             return;
