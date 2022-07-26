@@ -30,7 +30,7 @@ public class Main {
                 return instructionSet;
             splitter = input.get(ln).indexOf(' ');
             firstArgument = splitter != -1 ? input.get(ln).substring(level.length(), splitter).trim() : "";
-            rawExpression = splitter != -1 ? input.get(ln).substring(splitter) : input.get(ln);
+            rawExpression = splitter != -1 && InstructionHandler.check(firstArgument) ? input.get(ln).substring(splitter) : input.get(ln);
             expression = new Expression(rawExpression.isEmpty() ? null : rawExpression, context);
             ln++;
             InstructionSet codeBlock = read(level + "\t", context);
@@ -45,7 +45,7 @@ public class Main {
             return;
         }
         String p = args[0];*/
-        String p = "C:\\WorkingDirectory\\fisier.pskr";
+        String p = "C:\\WorkingDirectory\\fibo.pskr";
         if(!p.endsWith(".pskr")){
             System.out.println("Invalid file type. File must be of type \".pskr\".");
             return;

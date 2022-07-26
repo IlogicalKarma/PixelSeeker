@@ -24,5 +24,11 @@ public class InstructionHandler {
         }
         return null;
     }
+    public static boolean check(String string) {
+        try {
+            return Util.getClassFromLibrary(string, library).getField("id") != null;
+        }catch (NoSuchFieldException e){}
+        return false;
+    }
 
 }

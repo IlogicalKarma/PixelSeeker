@@ -166,10 +166,12 @@ public class Expression implements Element {
     }
 
     private Element strToData(String str) throws ExpressionExtractionFailureException, NamingErrorException {
+        Integer r;
         if (str == null)
             throw new ExpressionExtractionFailureException("Null value");
         str = str.trim().toLowerCase(Locale.ROOT);
-        Integer r;
+        if(str.isEmpty())
+            throw new ExpressionExtractionFailureException("Missing value");
         if (str.startsWith("\"") && str.endsWith("\"")) {
             return Data.getStr(str.substring(1, str.length() - 1));
         }
